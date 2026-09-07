@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-e7ec5e9f-e201-4590-a3ca-0e379e46c52e/styles.css">
+<script src="_ds/industry-e7ec5e9f-e201-4590-a3ca-0e379e46c52e/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--color-bg); color: var(--color-text);
+         font-family: 'Barlow', 'Noto Sans Thai', sans-serif; }
+  h1, h2, h3, h4 { font-family: 'Barlow Condensed', 'Noto Sans Thai', sans-serif; font-weight: 600; }
+  a { color: var(--color-accent-700); text-decoration: none; border-bottom: 1px solid var(--color-accent-300); }
+  a:hover { color: var(--color-accent-900); border-bottom-color: var(--color-accent-700); }
+  a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  sup a { border: 0; font-size: 11px; padding: 0 1px; }
+</style>
+</helmet>
+
+<div style="max-width: 1180px; margin: 0 auto; padding: 28px 20px 90px;">
+
+  <header style="display: flex; flex-direction: column; gap: 14px; border-bottom: 2px solid var(--color-text); padding-bottom: 16px;">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">
+      <span>Research Report</span><span>·</span><span>7 กันยายน 2569</span><span>·</span>
+      <span>System Design / Spec / Process Optimization</span>
+    </div>
+    <h1 style="margin: 0; font-size: clamp(36px, 5.6vw, 64px); line-height: 0.96; letter-spacing: -0.01em; text-wrap: balance;">
+      ระบบร้านหมูกระทะครบวงจร: หลักฐานเชิงตลาด สถาปัตยกรรม Visit และข้อจำกัดที่ต้องออกแบบตั้งแต่วันแรก
+    </h1>
+    <p style="margin: 0; max-width: 70ch; font-size: 17px; line-height: 1.6; color: var(--color-neutral-800); text-wrap: pretty;">
+      รายงานประเมินแนวคิด <strong>“หมากระทุปุ๊ป๊ะ”</strong> — Customer / Staff / Admin ที่ผูกกันด้วย Visit เดียว —
+      เทียบกับสภาพตลาดร้านอาหารไทยปี 2569, หลักฐานผลลัพธ์จากเชนปิ้งย่างที่ทำ order-to-pay จริง,
+      และภูมิทัศน์ POS ที่มีโหมดบุฟเฟต์วางขายอยู่แล้ว
+    </p>
+  </header>
+
+  <nav style="display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); margin-bottom: 40px;">
+    <a href="#s0" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">00</span> ระเบียบวิธี</a>
+    <a href="#s1" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">01</span> สรุปผู้บริหาร</a>
+    <a href="#s2" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">02</span> ตลาดปี 2569</a>
+    <a href="#s3" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">03</span> หลักฐาน order-to-pay</a>
+    <a href="#s4" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">04</span> คู่แข่งตัวจริง</a>
+    <a href="#s5" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">05</span> Visit เป็นแกน</a>
+    <a href="#s6" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">06</span> ข้อจำกัดบังคับ</a>
+    <a href="#s7" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">07</span> KPI &amp; ลำดับงาน</a>
+    <a href="#s8" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">08</span> ช่องว่างหลักฐาน</a>
+    <a href="#src" style="flex: 1 1 180px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">—</span> แหล่งอ้างอิง</a>
+  </nav>
+
+  <section id="s0" style="margin-bottom: 60px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">00</span>
+      <h2 style="margin: 0; font-size: 28px;">ระเบียบวิธีและขอบเขต</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 22px;">
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">คำถามวิจัย</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          (1) ตลาดร้านหมูกระทะไทยปี 2569 มีแรงกดดันพอให้ร้านยอมเปลี่ยนระบบหรือไม่
+          (2) มีหลักฐานว่ากลไก QR + order-to-pay ให้ผลจริงในบริบทไทยหรือไม่ ขนาดเท่าไร
+          (3) Visit เป็น aggregate ที่ถูกต้องเชิงสถาปัตยกรรมเพียงใด และล้มที่จุดใด
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">วิธีเก็บข้อมูล</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          สืบค้นเว็บ 6 ชุดคำค้น (ไทย/อังกฤษ) แล้วดึงเอกสารต้นทางเต็มฉบับ 4 ชิ้น
+          ให้น้ำหนักกับ (ก) สำนักวิจัยเศรษฐกิจ (ข) ข่าวธุรกิจที่อ้างตัวเลขบริษัทโดยตรง
+          (ค) หน้าราคาของผู้ขายเอง ตัวเลขทุกตัวที่ใช้ตัดสินใจถูกตรวจข้ามอย่างน้อย 2 แหล่ง
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ข้อจำกัดของรายงาน</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          ไม่มีสถิติเฉพาะเซกเมนต์ “หมูกระทะ” ที่เผยแพร่ต่อสาธารณะ จึงต้องอนุมานจากข้อมูลระดับ
+          “ร้านอาหารและเครื่องดื่ม” และ “ร้านบุฟเฟต์” และไม่มีการเก็บข้อมูลภาคสนามจากร้านจริง
+          — ดูรายละเอียดใน <a href="#s8">§08</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s1" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">01</span>
+      <h2 style="margin: 0; font-size: 30px;">สรุปสำหรับผู้ตัดสินใจ</h2>
+    </div>
+    <p style="margin: 0 0 22px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">Executive summary — ห้าข้อค้นพบ</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 22px;">
+
+      <article class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">Finding 01 · ตลาด</div>
+        <h3 class="card-title" style="font-size: 20px;">โจทย์ปี 2569 คือกำไร ไม่ใช่ยอดขาย</h3>
+        <p class="card-body" style="font-size: 14px; opacity: 0.9; line-height: 1.65;">
+          ศูนย์วิจัยกสิกรไทยประเมินตลาดร้านอาหารและเครื่องดื่มปี 2569 โต <strong>2.5%</strong> ชะลอจาก 4.5%
+          และการโตนั้น “เป็นผลด้านราคาเป็นหลัก” หลังต้นทุนขึ้น <strong>10–20%</strong>
+          โดยระบุ <strong>ร้านบุฟเฟต์เป็นกลุ่มเปราะบาง</strong> จากการแข่งขันสูงบวกต้นทุนวัตถุดิบและพลังงาน<sup><a href="#r1">[1]</a></sup>
+          <br><br>ระบบจึงต้องขายด้วย “รอบโต๊ะต่อชั่วโมง” และ “ต้นทุนแรงงานต่อบิล” ไม่ใช่ความสะดวก
+        </p>
+        <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span style="white-space: nowrap;" class="tag tag-accent">ความมั่นใจ: สูง</span><span>สำนักวิจัย + ข่าว 2 ฉบับ</span></div>
+      </article>
+
+      <article class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">Finding 02 · หลักฐาน</div>
+        <h3 class="card-title" style="font-size: 20px;">Order-to-pay พิสูจน์แล้วในบริบทไทย</h3>
+        <p class="card-body" style="font-size: 14px; opacity: 0.9; line-height: 1.65;">
+          บาร์บีคิวพลาซ่า (ฟู้ดแพชชั่น) ลงทุน <strong>กว่า 30 ล้านบาท</strong> จ้างสตาร์ทอัพไทย Hato Hub พัฒนา <strong>2 ปี</strong>
+          ผลคือเวลารอหลังสั่งออเดอร์แรก <strong>เร็วขึ้น 46%</strong> และการจ่ายเงินที่โต๊ะ <strong>เร็วขึ้น 87%</strong>
+          จาก baseline ที่วัดไว้ว่าขั้นสั่งอาหาร ~10 นาที และรอจ่ายอีก ~10 นาที<sup><a href="#r4">[4]</a><a href="#r6">[6]</a></sup>
+          <br><br>เป็นหลักฐานตรงว่ากลไก QR → Visit → จ่ายเอง แก้ปัญหาจริง ไม่ใช่แค่ลดกระดาษ
+        </p>
+        <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span style="white-space: nowrap;" class="tag tag-accent">ความมั่นใจ: สูง</span><span>ตัวเลขบริษัท, รายงาน 5 สำนัก</span></div>
+      </article>
+
+      <article class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">Finding 03 · การแข่งขัน</div>
+        <h3 class="card-title" style="font-size: 20px;">คู่แข่งคือ POS ที่มีโหมดบุฟเฟต์แล้ว</h3>
+        <p class="card-body" style="font-size: 14px; opacity: 0.9; line-height: 1.65;">
+          FoodStory (LINE MAN Wongnai) ขายแพ็กเกจ <strong>Buffet 2,290 บาท/เดือน</strong> และเป็นตัวเลือกตั้งต้นของร้านบุฟเฟต์/หมูกระทะ
+          ส่วน Qashier คิด <strong>buffet timing เพิ่ม 2,990 บาท/ปี</strong><sup><a href="#r8">[8]</a></sup>
+          <br><br>สิ่งที่ตลาดยัง “ต่อไม่ติด” คือคิวหน้าร้าน + โต๊ะ + ออเดอร์ ในสถานะเดียวกัน — นั่นคือช่องว่างที่ Visit ยึดได้
+        </p>
+        <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span style="white-space: nowrap;" class="tag tag-neutral">ความมั่นใจ: กลาง</span><span>ราคาจากบทเทียบที่ผู้เขียนเป็นคู่แข่ง</span></div>
+      </article>
+
+      <article class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">Finding 04 · สถาปัตยกรรม</div>
+        <h3 class="card-title" style="font-size: 20px;">Visit ถูกทาง แต่จุดตายอยู่ปลายทาง</h3>
+        <p class="card-body" style="font-size: 14px; opacity: 0.9; line-height: 1.65;">
+          การมี Visit เป็น aggregate เดียวคือการตัดสินใจที่ถูก แต่ความเสี่ยงไม่ได้อยู่ตอนเปิด Visit
+          มันอยู่ตอน <strong>แยกบิล / ย้ายโต๊ะ / รวมโต๊ะ / เน็ตหลุดตอนจ่าย</strong>
+          และการที่ QR โต๊ะเดิมยังสแกนได้หลังปิดโต๊ะ
+          <br><br>ต้องมี state machine ที่ปฏิเสธคำสั่งผิดสถานะ และ idempotency key ทุกจุดจ่ายเงิน — ดู <a href="#s5">§05</a>
+        </p>
+        <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span style="white-space: nowrap;" class="tag tag-outline">การวิเคราะห์ของเรา</span><span>ไม่ใช่ข้อสรุปจากแหล่งข้อมูล</span></div>
+      </article>
+
+      <article class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">Finding 05 · ความเสี่ยง</div>
+        <h3 class="card-title" style="font-size: 20px;">PDPA และ “ไม่ต้องโหลดแอป” เป็นข้อบังคับ ไม่ใช่ฟีเจอร์</h3>
+        <p class="card-body" style="font-size: 14px; opacity: 0.9; line-height: 1.65;">
+          PDPA บังคับใช้ตั้งแต่ 1 มิ.ย. 2565 — ต้องขอความยินยอมโดยสมัครใจ <strong>แยกจากเงื่อนไขอื่น</strong>
+          ถอนได้ง่ายเท่าที่ให้ (ม.19) โทษปรับทางปกครองสูงสุด <strong>5 ล้านบาทต่อกรณี</strong><sup><a href="#r9">[9]</a><a href="#r10">[10]</a></sup>
+          <br><br>ฝั่งประสบการณ์: ฮ่องกงมีเรื่องร้องเรียน QR ordering <strong>27 เรื่องใน 10 เดือน</strong> ปี 2566
+          ส่วนใหญ่เรื่องบังคับโหลดแอปและราคาไม่ชัด<sup><a href="#r7">[7]</a></sup>
+        </p>
+        <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span class="tag tag-accent" style="white-space: nowrap;">ความมั่นใจ: สูง</span><span>ตัวบทกฎหมาย + คู่มือ LMWN</span></div>
+      </article>
+
+      <article class="blueprint" style="border: 1px solid var(--color-accent); background: var(--color-accent-900); color: var(--color-bg); padding: var(--space-3); display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8;">คำตัดสินโดยรวม</div>
+        <p style="margin: 0; font-family: 'Barlow Condensed', 'Noto Sans Thai', sans-serif; font-size: 25px; line-height: 1.2;">
+          แนวคิดถูกทิศ ตลาดมีแรงกดดันพอให้ร้านยอมเปลี่ยน — ความเสี่ยงจริงคือขอบเขตงาน
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.65;">
+          ทั้งสาม role คือระบบเดียวที่ต้องเสถียรระดับ “คืนเสาร์คนเต็มร้าน” ไม่ใช่สาม MVP แยกกัน
+          แนะนำตัดขอบเป็น <em>คิว → โต๊ะ → Visit → ออเดอร์ → บิล</em> ให้ครบวงและทนล่มก่อน
+          แล้วค่อยต่อสมาชิก / แต้ม / แดชบอร์ดยอดขาย
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="s2" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">02</span>
+      <h2 style="margin: 0; font-size: 30px;">ตลาดปี 2569: บุฟเฟต์อยู่ในกลุ่มเปราะบางที่สุด</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 30px; align-items: start;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <p style="margin: 0; font-size: 16px; line-height: 1.7; text-wrap: pretty;">
+          ศูนย์วิจัยกสิกรไทยประเมินว่ามูลค่าตลาดร้านอาหารและเครื่องดื่มปี 2569 จะโตเพียง <strong>2.5%</strong>
+          ชะลอจาก <strong>4.5%</strong> ในปีก่อน และย้ำว่าการเติบโตนั้น “เป็นผลด้านราคาเป็นหลัก” ไม่ใช่กำลังซื้อที่ฟื้น
+          — ร้านทยอยขึ้นราคาเฉลี่ย 10–20% เพื่อรับต้นทุนพลังงาน วัตถุดิบ และบรรจุภัณฑ์<sup><a href="#r1">[1]</a><a href="#r2">[2]</a></sup>
+        </p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.7; text-wrap: pretty;">
+          รายงานเดียวกันจัดกลุ่มเปราะบางไว้สามกลุ่ม: <strong>ร้านบุฟเฟต์</strong> (แข่งสูง + ต้นทุนวัตถุดิบและพลังงานเร่งตัว),
+          ร้านพรีเมียม, และร้านที่พึ่งเดลิเวอรีเป็นรายได้หลัก เทียบกับปี 2568 ที่กสิกรฯ เคยประเมินมูลค่าตลาดไว้
+          <strong>657,000 ล้านบาท</strong> เติบโต 4.6%<sup><a href="#r3">[3]</a></sup>
+        </p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.7; text-wrap: pretty;">
+          ด้านแรงงาน สภาพัฒน์รายงานว่าไตรมาส 2/2569 ผู้ว่างงานแตะ <strong>4.0 แสนคน</strong> สูงสุดในรอบ 7 ไตรมาส
+          ค่าจ้างจริงหลังหักเงินเฟ้อ <strong>ลดลง 2.88%</strong> และ <strong>41.1%</strong> ของผู้ว่างงานที่เคยทำงานคือคน “ลาออกเอง”<sup><a href="#r11">[11]</a></sup>
+          — สภาพนี้ทำให้ระบบที่ลดจำนวนคนต่อกะมีมูลค่าทางธุรกิจชัดขึ้น แต่ก็หมายความว่า
+          <strong>ผู้ใช้ฝั่ง Staff จะเป็นพนักงานใหม่เสมอ</strong> ระบบต้องสอนตัวเองได้ในหนึ่งกะ
+        </p>
+        <p style="margin: 0; padding: 14px 16px; border-left: 3px solid var(--color-accent); font-size: 15px; line-height: 1.65; background: var(--color-accent-100);">
+          <strong>สิ่งที่นี่แปลว่า (การตีความของเรา):</strong> เจ้าของร้านหมูกระทะปี 2569 ไม่ได้ซื้อ “เว็บสั่งอาหาร”
+          เขาซื้อ <em>รอบโต๊ะที่เพิ่มขึ้น</em> กับ <em>คนน้อยลงหนึ่งคนต่อกะ</em>
+          ตัวเลขทั้งสองต้องอยู่บนแดชบอร์ด Admin ตั้งแต่วันแรก ไม่ใช่ยอดขายรวมอย่างเดียว
+        </p>
+      </div>
+      <div class="blueprint" style="padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700);">ตัวเลขอ้างอิงหลัก</div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 14px; border-bottom: 1px solid var(--color-divider);">
+          <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 52px; line-height: 1;">2.5%</span>
+          <span style="font-size: 13px; line-height: 1.5; color: var(--color-neutral-800);">การเติบโตตลาดร้านอาหาร-เครื่องดื่ม 2569 (จาก 4.5% ปีก่อน) · กสิกรไทย</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 14px; border-bottom: 1px solid var(--color-divider);">
+          <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 52px; line-height: 1;">10–20%</span>
+          <span style="font-size: 13px; line-height: 1.5; color: var(--color-neutral-800);">ช่วงการปรับขึ้นราคาเฉลี่ยของร้าน เพื่อรับต้นทุนที่สูงขึ้น</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 52px; line-height: 1;">−2.88%</span>
+          <span style="font-size: 13px; line-height: 1.5; color: var(--color-neutral-800);">ค่าจ้างจริงหลังหักเงินเฟ้อ ไตรมาส 2/2569 · สภาพัฒน์</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s3" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">03</span>
+      <h2 style="margin: 0; font-size: 30px;">หลักฐานว่ากลไกนี้ได้ผล: กรณีบาร์บีคิวพลาซ่า</h2>
+    </div>
+    <p style="margin: 0 0 24px; max-width: 80ch; font-size: 16px; line-height: 1.7; text-wrap: pretty;">
+      กรณีที่ใกล้ที่สุดกับสิ่งที่คุณกำลังสร้าง และมีตัวเลขเปิดเผย คือ <strong>GON ORDER-TO-PAY</strong> ของบาร์บีคิวพลาซ่า
+      — ปิ้งย่างเช่นเดียวกัน ลูกค้ามาเป็นกลุ่ม มื้อยาว เปิดตัว ส.ค. 2567
+      ลูกค้าเข้าผ่าน LINE แล้วสแกน QR ประจำโต๊ะ สั่ง ติดตามอาหาร และชำระเงินเองได้ครบวงจร
+      โดยรวมการบริหารลูกค้าและ POS หน้าร้านไว้ในระบบเดียว<sup><a href="#r4">[4]</a><a href="#r5">[5]</a></sup>
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 1px; background: var(--color-divider); border: 1px solid var(--color-divider); margin-bottom: 26px;">
+      <div style="background: var(--color-bg); padding: 20px;">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 44px; line-height: 1; color: var(--color-accent-800);">46%</div>
+        <div style="font-size: 13px; line-height: 1.5; margin-top: 6px;">เวลารอหลังสั่งออเดอร์แรก <strong>เร็วขึ้น</strong></div>
+      </div>
+      <div style="background: var(--color-bg); padding: 20px;">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 44px; line-height: 1; color: var(--color-accent-800);">87%</div>
+        <div style="font-size: 13px; line-height: 1.5; margin-top: 6px;">การจ่ายเงินที่โต๊ะ <strong>เร็วขึ้น</strong></div>
+      </div>
+      <div style="background: var(--color-bg); padding: 20px;">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 44px; line-height: 1; color: var(--color-accent-800);">30 ลบ.</div>
+        <div style="font-size: 13px; line-height: 1.5; margin-top: 6px;">งบลงทุน จ้าง Hato Hub พัฒนา <strong>2 ปี</strong></div>
+      </div>
+      <div style="background: var(--color-bg); padding: 20px;">
+        <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 44px; line-height: 1; color: var(--color-accent-800);">32 → 97</div>
+        <div style="font-size: 13px; line-height: 1.5; margin-top: 6px;">สาขาที่ใช้งาน ณ เปิดตัว → เป้าสิ้นปี 2567</div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 26px;">
+      <div>
+        <h3 style="margin: 0 0 10px; font-size: 21px;">baseline ที่พวกเขาวัดก่อนสร้าง</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+          Marketeer รายงานว่าโดยเฉลี่ยขั้นตอนสั่งอาหารปกติใช้ <strong>~10 นาที</strong> และช่วงรอชำระเงินอีก <strong>~10 นาที</strong>
+          ซึ่งเป็นโจทย์ตั้งต้นของโครงการ<sup><a href="#r6">[6]</a></sup>
+          — ตัวเลขสองตัวนี้คือ baseline ที่คุณควรจับเวลาในร้านเป้าหมายด้วยนาฬิกาจับเวลา
+          <strong>ก่อน</strong> เขียนโค้ดบรรทัดแรก มิฉะนั้นจะไม่มีตัวตั้งให้พิสูจน์ว่าระบบได้ผล
+        </p>
+      </div>
+      <div>
+        <h3 style="margin: 0 0 10px; font-size: 21px;">ข้อควรระวังในการอ่านตัวเลขนี้</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+          ทั้ง 46% และ 87% เป็น <strong>ตัวเลขที่บริษัทเปิดเผยเอง</strong> จากช่วงทดลอง ไม่มีการตรวจสอบโดยบุคคลที่สาม
+          และมาจากเชนที่สมาชิก GON Gang คิดเป็น <strong>กว่า 90%</strong> ของลูกค้า<sup><a href="#r5">[5]</a></sup>
+          ร้านหมูกระทะเจ้าเดียวที่ไม่มีฐานสมาชิกและลูกค้า walk-in เป็นหลัก
+          ไม่ควรคาดหวังอัตราการใช้ (adoption) ระดับเดียวกัน
+        </p>
+      </div>
+    </div>
+    <p style="margin: 24px 0 0; padding: 14px 16px; border: 1px dashed var(--color-accent-400); font-size: 14px; line-height: 1.65;">
+      <strong>แหล่งที่ขัดกัน:</strong> บล็อกของผู้ให้บริการ QR menu รายหนึ่งอ้างว่าโครงการนี้ทำให้ยอดต่อบิลเพิ่ม 2–3%<sup><a href="#r7">[7]</a></sup>
+      แต่รายงานภาษาไทยห้าฉบับที่เราตรวจไม่มีตัวเลขนี้ — ที่ปรากฏคือ “เป้า” ยอดขายกลุ่มเมนูใหม่ +57%<sup><a href="#r4">[4]</a></sup>
+      เราจึงถือว่าตัวเลข 2–3% <strong>ยังไม่ยืนยัน</strong> และไม่ควรนำไปใช้ประกอบการขาย
+    </p>
+  </section>
+
+  <section id="s4" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">04</span>
+      <h2 style="margin: 0; font-size: 30px;">คู่แข่งตัวจริงไม่ใช่เว็บสั่งอาหาร — คือ POS ที่มีโหมดบุฟเฟต์แล้ว</h2>
+    </div>
+    <p style="margin: 0 0 20px; max-width: 80ch; font-size: 16px; line-height: 1.7;">
+      ตลาด POS ไทยไม่มี “เจ้าที่ดีที่สุด” แต่แบ่งเป็นคลัสเตอร์ และคลัสเตอร์ร้านบุฟเฟต์/หมูกระทะถูกยึดโดย LINE MAN Wongnai
+      (FoodStory สาย iPad + Wongnai POS สาย Android — บริษัทเดียวกัน ราคาลิสต์เดียวกัน)
+      ข้อสังเกตสำคัญ: <strong>สาย Android ไม่มีแพ็กเกจบุฟเฟต์เลย</strong> ร้านหมูกระทะหรือชาบูต้องซื้อสาย iPad
+      ราคาทั้งหมดข้างล่างอ่านจากเว็บผู้ขายเมื่อ 27 ก.ค. 2569 ส่วนใหญ่ไม่รวม VAT 7%<sup><a href="#r8">[8]</a></sup>
+    </p>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="min-width: 130px;">ระบบ</th>
+            <th style="min-width: 170px;">ราคาที่ประกาศ</th>
+            <th style="min-width: 200px;">จุดแข็ง</th>
+            <th style="min-width: 230px;">ช่องว่างที่เกี่ยวกับคุณ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>FoodStory</strong><br><span style="font-size: 12px; opacity: 0.7;">iPad, LMWN</span></td>
+            <td>1,590 / 1,990 / <strong>2,290</strong> บาท/เดือน<br><span style="font-size: 12px; opacity: 0.7;">QSR / Full service / <strong>Buffet</strong></span></td>
+            <td>ออเดอร์ LINE MAN เข้าครัวเอง, ตั้งราคาต่อช่องทางขาย, อ้างร้านใช้งาน 60,000+ ร้าน</td>
+            <td>จำนวนเครื่องพิมพ์จำกัดตามแพ็กเกจ; ไม่ได้ขายเป็น “คิวหน้าร้าน + Visit” ครบวง</td>
+          </tr>
+          <tr>
+            <td><strong>Qashier</strong></td>
+            <td>7,990 / 11,990 บาท/ปี</td>
+            <td>ราคาซอฟต์แวร์ต่ำสุดที่ประกาศ, QR ordering, PromptPay QR แบบ dynamic</td>
+            <td><strong>buffet timing เป็น add-on +2,990 บาท/ปี</strong>, KDS +2,490/ปี, ไม่มีเวอร์ชัน iOS</td>
+          </tr>
+          <tr>
+            <td><strong>Silom POS</strong></td>
+            <td>490 / 990 / 1,990 / 2,990 บาท/เดือน</td>
+            <td>Official Grab Partner, CRM ผ่าน LINE OA, แจ้งยอดขายเข้า LINE</td>
+            <td>ผูกกับฮาร์ดแวร์ของผู้ขาย; QR ordering เริ่มที่ Smart+; เว็บตัวเองยังไม่ชัดว่ามีโหมดบุฟเฟต์</td>
+          </tr>
+          <tr>
+            <td><strong>Ocha POS</strong></td>
+            <td>799 บาท/เดือน<br><span style="font-size: 12px; opacity: 0.7;">ชุดฮาร์ดแวร์ 17,990–30,990</span></td>
+            <td>ทำงาน <strong>ออฟไลน์</strong> และยังออกใบกำกับภาษีได้, sync หลายเครื่อง</td>
+            <td>เอกสารทางการยังระบุว่ารับออเดอร์ QR ไม่ได้ ทั้งที่ออกคู่มือ Scan-to-Order ก.ย. 2568 — ขัดกันเอง; แบรนด์ย้ายไป SCommerce 1 ส.ค. 2569</td>
+          </tr>
+          <tr>
+            <td><strong>StoreHub</strong></td>
+            <td>990 / 1,999 / 4,800 บาท/เดือน</td>
+            <td>ออฟไลน์, sync สต๊อกกับ Shopee/Lazada/TikTok, มีกองรถส่งเอง (Beep)</td>
+            <td>ไม่ประกาศราคาฮาร์ดแวร์เลย; เน้นค้าปลีก+อาหารมากกว่าบุฟเฟต์หน้าร้าน</td>
+          </tr>
+          <tr>
+            <td><strong>Loyverse</strong></td>
+            <td>คอร์ฟรี<br><span style="font-size: 12px; opacity: 0.7;">add-on 9–25 USD/เดือน/สาขา</span></td>
+            <td>ฟรีจริง, ไทยเป็น 1 ใน 17 ภาษา, ลงบน Android/iOS ที่มีอยู่</td>
+            <td>เห็นข้อมูลย้อนหลังแค่ <strong>31 วัน</strong>; ไม่มีรายการเชื่อม acquirer ไทยหรือ PromptPay</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin: 14px 0 22px; font-size: 13px; line-height: 1.6; color: var(--color-neutral-800);">
+      <strong>ข้อควรระวังเรื่องแหล่งข้อมูล:</strong> ตารางนี้อ้างจากบทเทียบที่ <em>ผู้เขียนเป็นผู้ขายรายหนึ่งในบทเทียบเอง</em>
+      (ประกาศ conflict of interest ไว้ชัดเจน และอ้างราคาจากเว็บของเจ้าของราคาแต่ละราย)<sup><a href="#r8">[8]</a></sup>
+      ก่อนใช้ตัดสินใจเชิงกลยุทธ์ ควรขอใบเสนอราคาเป็นลายลักษณ์อักษรจากผู้ขายโดยตรง
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 22px;">
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ช่องว่างที่ยืนยันได้</div>
+        <h3 class="card-title" style="font-size: 18px;">QR ที่ไม่ต่อกับ POS = พิมพ์ซ้ำ</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          บทเทียบเตือนตรง ๆ ว่าการเอา QR menu ไปแปะบน POS แยกเจ้า มักจบด้วยพนักงานพิมพ์ออเดอร์ซ้ำเข้าเครื่อง
+          ซึ่งเรียกความผิดพลาดที่ QR ควรกำจัดกลับมาทั้งหมด — คำถามคัดกรองคือ
+          “ออเดอร์ลงเครื่องและพิมพ์เข้าครัวเองไหม หรือมีคนต้องพิมพ์ซ้ำ”<sup><a href="#r8">[8]</a></sup>
+          <br><br>นี่คือเหตุผลเชิงหลักฐานที่หนักที่สุดที่รองรับข้ออ้าง “ไม่ใช่แค่เว็บสั่งอาหาร”
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">สิ่งที่มีอยู่แล้วในตลาด</div>
+        <h3 class="card-title" style="font-size: 18px;">คิวและจอครัวไม่ใช่ของใหม่</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          FoodStory เปิด Queue Display (ก.พ. 2568) แสดงสถานะ “กำลังเตรียม / พร้อมเสิร์ฟ” แบบเรียลไทม์บน Android TV
+          พร้อมกดเรียกคิวจากแท็บเล็ต<sup><a href="#r12">[12]</a></sup>
+          ส่วนการจองคิวล่วงหน้ามี QueQ ครองการรับรู้ในกลุ่มร้านในห้าง<sup><a href="#r13">[13]</a></sup>
+          <br><br>ข้อสรุป: ฟีเจอร์คิวเดี่ยว ๆ ไม่ใช่จุดขาย — <strong>การที่คิวรู้จัก Visit</strong> คือจุดขาย
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">คำถามเชิงกลยุทธ์</div>
+        <h3 class="card-title" style="font-size: 18px;">คุณจะเป็นสินค้า หรือระบบของร้านตัวเอง</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          ถ้าเป็นระบบของร้านเดียว ให้ตัดฟีเจอร์หลายสาขา ภาษาหลายภาษา และ CRM ออกทั้งหมด
+          ถ้าจะขายเป็นสินค้า ต้องตอบสามคำถามที่บทเทียบบอกว่าเจ้าของร้านถามจริง:
+          ราคาเป็นบาทรวม VAT และฮาร์ดแวร์เท่าไร, เน็ตหลุดแล้วเป็นอย่างไร,
+          และคืนเสาร์สองทุ่มระบบล่มใครมาซ่อม<sup><a href="#r8">[8]</a></sup>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s5" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">05</span>
+      <h2 style="margin: 0; font-size: 30px;">Visit เป็นแกน: สิ่งที่ถูก และสิ่งที่ต้องเขียนใน spec</h2>
+    </div>
+    <p style="margin: 0 0 26px; max-width: 80ch; font-size: 16px; line-height: 1.7;">
+      ส่วนนี้เป็น <strong>การวิเคราะห์ของเรา</strong> ไม่ใช่ข้อสรุปจากแหล่งข้อมูล
+      โดยอนุมานจากรูปแบบที่กรณีบาร์บีคิวพลาซ่าเลือกใช้ (LINE + QR ประจำโต๊ะ + POS ในระบบเดียว)
+      และจากช่องว่างที่บทเทียบ POS ระบุ (ออเดอร์ต้องไม่ถูกพิมพ์ซ้ำ, ระบบต้องทำงานตอนเน็ตหลุด)
+    </p>
+
+    <div style="border: 1px solid var(--color-divider); padding: 24px; margin-bottom: 26px;">
+      <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 18px;">Visit state machine — สถานะที่ระบบต้องยอมรับเท่านั้น</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch;">
+        <sc-for list="{{ states }}" as="st" hint-placeholder-count="7">
+          <div class="blueprint" style="flex: 1 1 140px; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px;">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 0.1em; color: var(--color-accent-700);">{{ st.code }}</div>
+            <div style="font-family: 'Barlow Condensed', 'Noto Sans Thai', sans-serif; font-size: 18px; line-height: 1.15;">{{ st.name }}</div>
+            <div style="font-size: 12px; line-height: 1.5; color: var(--color-neutral-800);">{{ st.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin: 18px 0 0; font-size: 14px; line-height: 1.7;">
+        กฎที่ต้องบังคับในโค้ด ไม่ใช่ใน UI: ออเดอร์รับได้เฉพาะสถานะ <strong>DINING</strong>;
+        QR ที่ผูกกับ Visit ที่ <strong>CLOSED</strong> ต้องตอบหน้า “มื้อนี้จบแล้ว” ไม่ใช่เปิด Visit ใหม่เงียบ ๆ;
+        และ token ใน QR ต้องผูกกับ <em>visit_id</em> ไม่ใช่ <em>table_id</em> เพียงอย่างเดียว
+        มิฉะนั้นลูกค้าโต๊ะถัดไปที่ถ่ายรูป QR ไว้จะสั่งเข้าบิลคนอื่นได้
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 22px;">
+      <sc-for list="{{ risks }}" as="rk" hint-placeholder-count="6">
+        <article class="card blueprint">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="card-kicker">{{ rk.kicker }}</div>
+          <h3 class="card-title" style="font-size: 18px;">{{ rk.title }}</h3>
+          <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">{{ rk.body }}</p>
+          <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span style="white-space: nowrap;" class="tag tag-outline">{{ rk.tag }}</span></div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="s6" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">06</span>
+      <h2 style="margin: 0; font-size: 30px;">ข้อจำกัดบังคับสี่ข้อ ที่ต้องอยู่ใน spec ไม่ใช่ backlog</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 26px;">
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 8px; font-size: 20px;">1 · PDPA: consent ต้องแยกจากการใช้งาน</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+            ข้อดีของดีไซน์คุณคือ “ไม่สมัครสมาชิกก็ใช้ได้” ซึ่งสอดคล้องกับ PDPA โดยธรรมชาติ:
+            การสั่งอาหารและออกบิลอาศัยฐานสัญญา ไม่ต้องขอ consent
+            แต่ <strong>แต้ม โปรโมชั่น และการตลาด</strong> ต้องขอ consent แยกเป็นรายวัตถุประสงค์
+            โดยสมัครใจ แยกจากเงื่อนไขอื่น และถอนได้ง่ายเท่ากับตอนให้ (ม.19)
+            มีสิทธิรับรู้ว่าเก็บอะไร นานแค่ไหน ส่งต่อใคร (ม.23)<sup><a href="#r9">[9]</a><a href="#r10">[10]</a></sup>
+            <br><br>โทษปรับทางปกครองสูงสุด <strong>5 ล้านบาทต่อกรณี</strong> ครอบคลุมกรณีเก็บข้อมูลโดยไม่มีฐานทางกฎหมาย
+            ไม่ขอ consent ก่อนใช้ทำการตลาด และไม่มีมาตรการรักษาความปลอดภัย<sup><a href="#r9">[9]</a></sup>
+            <br><br><strong>ผลต่อ schema:</strong> ตาราง visit ต้องเก็บได้โดยไม่มี PII ของลูกค้าเลย
+            ส่วนเบอร์โทรที่ใช้เรียกคิวคือข้อมูลส่วนบุคคล — ต้องมีนโยบายลบอัตโนมัติเมื่อปิดโต๊ะ
+          </p>
+        </div>
+        <div>
+          <h3 style="margin: 0 0 8px; font-size: 20px;">2 · ต้องไม่บังคับติดตั้งแอป</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+            เรื่องร้องเรียน QR ordering ต่อสภาผู้บริโภคฮ่องกงพุ่งเป็น <strong>27 เรื่องในสิบเดือนแรกของปี 2566</strong>
+            หรือราว 13 เท่าของยอดทั้งปี 2563 โดยประเด็นหลักคือการบังคับดาวน์โหลดแอปและราคาที่ไม่ชัดเจน<sup><a href="#r7">[7]</a></sup>
+            <br><br>การเลือกทำเป็น <strong>เว็บที่เปิดในเบราว์เซอร์ ไม่ต้องสมัครสมาชิก</strong> จึงเป็นการตัดสินใจที่ถูก
+            และควรเขียนไว้เป็นข้อกำหนดที่ห้ามถอย ไม่ใช่ทางเลือก
+            <br><br>ข้อสังเกตเชิงตลาด: ผู้ให้บริการรายใหญ่ไทยหลายรายย้ายจาก dynamic QR มาใช้ QR แบบ static (สติกเกอร์/ป้ายตั้งโต๊ะ)
+            เพื่อลดความยุ่งยาก<sup><a href="#r7">[7]</a></sup> — แต่ static QR
+            <strong>ขัดกับ</strong> การผูก token กับ visit_id ที่ §05 เสนอ ต้องเลือกจุดยืนอย่างมีสติ
+            (ทางออกกลางคือ static QR → หน้า resolve → ออก session token ผูก visit ปัจจุบันของโต๊ะนั้น)
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 8px; font-size: 20px;">3 · เน็ตหลุดแล้วต้องขายต่อได้</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+            ในบรรดา POS ที่สำรวจ มีเพียง Ocha และ StoreHub ที่ระบุชัดว่าทำงานออฟไลน์ได้
+            และ Ocha ระบุว่ายังออกใบกำกับภาษีได้ตอนออฟไลน์<sup><a href="#r8">[8]</a></sup>
+            บทเทียบเดียวกันจัด “เน็ตหลุดแล้วเป็นอย่างไร” เป็นหนึ่งในสามคำถามที่ทำนายความพอใจได้ดีที่สุด
+            <br><br>สำหรับสถาปัตยกรรม “ทุกอย่างเชื่อมกันแบบ Real-time” นี่คือความตึงเครียดหลักของโปรเจกต์:
+            เรียลไทม์ต้องไม่แปลว่า “ออฟไลน์แล้วร้านหยุดขาย”
+            <br><br><strong>ข้อเสนอ:</strong> ให้ Staff Web เป็น degraded-mode ได้ (คิว/โต๊ะ/ออเดอร์เก็บใน local queue แล้ว sync)
+            ส่วน Customer Web ยอมล้มได้ เพราะยังมีพนักงานรับออเดอร์เป็นทางสำรอง
+            — นั่นคือเหตุผลว่าทำไม Staff Web ต้องรับออเดอร์เองได้ ไม่ใช่แค่ดูออเดอร์
+          </p>
+        </div>
+        <div>
+          <h3 style="margin: 0 0 8px; font-size: 20px;">4 · ผู้ใช้ฝั่ง Staff คือพนักงานใหม่เสมอ</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7;">
+            ข้อมูลแรงงานปี 2569 ชี้ว่า 41.1% ของผู้ว่างงานที่เคยทำงานมาจากการลาออกเอง
+            และค่าจ้างจริงลดลง 2.88%<sup><a href="#r11">[11]</a></sup>
+            ในทางปฏิบัติแปลว่าอัตราการหมุนเวียนพนักงานสูง
+            <br><br><strong>ผลต่อดีไซน์:</strong> Staff Web ต้องใช้ได้โดยไม่ต้องอบรม — ปุ่มใหญ่ระดับแตะด้วยนิ้วโป้ง (ไม่ต่ำกว่า 44px)
+            หนึ่งหน้าจอต่อหนึ่งภารกิจ (เรียกคิว / จัดโต๊ะ / เสิร์ฟ) และไม่มีการกระทำที่ทำลายข้อมูลโดยไม่ถามซ้ำ
+            <br><br>ตัววัดที่ควรใส่ไว้ใน spec: <strong>พนักงานใหม่ต้องเปิด Visit และรับออเดอร์ได้ถูกต้องภายในกะแรก โดยไม่มีคนสอน</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s7" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">07</span>
+      <h2 style="margin: 0; font-size: 30px;">KPI ที่ควรวัด และลำดับงานที่แนะนำ</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 28px; align-items: start;">
+      <div>
+        <h3 style="margin: 0 0 12px; font-size: 21px;">ห้าตัวชี้วัดที่ Visit ให้ได้ฟรี</h3>
+        <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.7;">
+          ข้อได้เปรียบทางโครงสร้างของการมี Visit เดียวคือทุก timestamp อยู่ในระเบียนเดียว
+          ทำให้คำนวณตัวชี้วัดเหล่านี้ได้โดยไม่ต้อง join ข้ามระบบ — และตัวชี้วัดเหล่านี้คือสิ่งที่ตอบโจทย์
+          “กำไรถูกกดในปี 2569” ตรง ๆ
+        </p>
+        <div style="border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+          <table class="table">
+            <thead>
+              <tr><th>ตัวชี้วัด</th><th>คำนวณจาก</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Wait-to-seat</strong><br><span style="font-size: 12px; opacity: 0.7;">เวลารอคิวจนได้นั่ง</span></td><td>queued_at → seated_at</td></tr>
+              <tr><td><strong>Time-to-first-bite</strong><br><span style="font-size: 12px; opacity: 0.7;">เทียบตรงกับตัวเลข 46%</span></td><td>first_order_at → first_served_at</td></tr>
+              <tr><td><strong>Checkout latency</strong><br><span style="font-size: 12px; opacity: 0.7;">เทียบตรงกับตัวเลข 87%</span></td><td>bill_requested_at → paid_at</td></tr>
+              <tr><td><strong>Table turns / ชม.</strong><br><span style="font-size: 12px; opacity: 0.7;">ตัวเลขที่เจ้าของร้านซื้อ</span></td><td>closed_at − seated_at ต่อโต๊ะ</td></tr>
+              <tr><td><strong>Self-service rate</strong><br><span style="font-size: 12px; opacity: 0.7;">สัดส่วนออเดอร์ที่ลูกค้าสั่งเอง</span></td><td>order.source = customer / ทั้งหมด</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin: 14px 0 0; font-size: 14px; line-height: 1.65; padding: 12px 14px; background: var(--color-accent-100); border-left: 3px solid var(--color-accent);">
+          <strong>Self-service rate คือตัวชี้วัดที่สำคัญที่สุดและถูกลืมบ่อยที่สุด</strong> —
+          ถ้าลูกค้ายังเรียกพนักงานสั่งเหมือนเดิม ต้นทุนแรงงานไม่ลด ระบบก็ไม่คืนทุน
+          ไม่ว่าเวลารอจะดีขึ้นเท่าไร
+        </p>
+      </div>
+      <div>
+        <h3 style="margin: 0 0 12px; font-size: 21px;">ลำดับงานที่ลดความเสี่ยงที่สุด</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <sc-for list="{{ phases }}" as="ph" hint-placeholder-count="4">
+            <div class="blueprint" style="padding: 16px; display: flex; gap: 14px; align-items: flex-start;">
+              <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+              <div style="font-family: 'Barlow Condensed', sans-serif; font-size: 30px; line-height: 0.9; color: var(--color-accent); min-width: 34px;">{{ ph.n }}</div>
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="font-family: 'Barlow Condensed', 'Noto Sans Thai', sans-serif; font-size: 19px; line-height: 1.2;">{{ ph.title }}</div>
+                <div style="font-size: 13.5px; line-height: 1.6;">{{ ph.body }}</div>
+                <div style="font-size: 12px; color: var(--color-accent-800);">เกณฑ์ผ่าน: {{ ph.gate }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <p style="margin: 14px 0 0; font-size: 14px; line-height: 1.65;">
+          เหตุผลของลำดับนี้: บาร์บีคิวพลาซ่าใช้เวลา <strong>2 ปีและงบ 30 ล้านบาท</strong>
+          กับขอบเขตที่แคบกว่าที่คุณวางไว้ (ไม่มีระบบคิวหน้าร้านในคำบรรยายฟีเจอร์)<sup><a href="#r4">[4]</a><a href="#r5">[5]</a></sup>
+          การพยายามส่ง Customer + Staff + Admin ครบทุกฟีเจอร์พร้อมกันเป็นความเสี่ยงหลักของโปรเจกต์นี้
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s8" style="margin-bottom: 64px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">08</span>
+      <h2 style="margin: 0; font-size: 30px;">ช่องว่างของหลักฐาน — สิ่งที่รายงานนี้ยังตอบไม่ได้</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 22px;">
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ช่องว่าง 01</div>
+        <h3 class="card-title" style="font-size: 18px;">ไม่มีสถิติเซกเมนต์หมูกระทะ</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          ไม่พบตัวเลขจำนวนร้าน มูลค่าเซกเมนต์ หรือรอบโต๊ะเฉลี่ยของ “หมูกระทะ” ที่เผยแพร่ต่อสาธารณะ
+          ที่พบคือรายการแนะนำร้านของ Wongnai/สื่อไลฟ์สไตล์ ซึ่งบอกได้แค่ว่าช่วงราคาส่วนใหญ่อยู่หลักร้อยต้น (ประมาณ 99–299 บาท)
+          และมีร้านจำนวนมากที่ชู “ไม่จำกัดเวลา”<sup><a href="#r14">[14]</a></sup>
+          — ข้อหลังนี้สำคัญ เพราะถ้าร้านเป้าหมายไม่จำกัดเวลา ตัวชี้วัดรอบโต๊ะจะอ่อนแรงลงมาก
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ช่องว่าง 02</div>
+        <h3 class="card-title" style="font-size: 18px;">ไม่มีหลักฐาน adoption ในร้านเดี่ยว</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          หลักฐานที่แข็งที่สุดที่เรามีมาจากเชนที่มีฐานสมาชิกกว่า 90% ของลูกค้า
+          ไม่มีข้อมูลเผยแพร่ว่าร้านหมูกระทะเจ้าเดียวที่ลูกค้า walk-in
+          จะมีสัดส่วนลูกค้าที่ยอมสแกนสั่งเองเท่าไร นี่คือสมมติฐานที่ยังไม่ถูกทดสอบ
+          และเป็นตัวแปรที่กระทบ ROI มากที่สุด
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ช่องว่าง 03</div>
+        <h3 class="card-title" style="font-size: 18px;">ยังไม่ตรวจข้อกำหนดใบกำกับภาษี</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          รายงานนี้เห็นเพียงว่า POS ไทยหลายรายโฆษณาเรื่องใบกำกับภาษีและ e-Tax
+          แต่ยังไม่ได้ตรวจประกาศกรมสรรพากรฉบับจริงว่าร้านที่จด VAT
+          ต้องออกเอกสารรูปแบบใดเมื่อชำระผ่าน QR — ต้องตรวจก่อนออกแบบโมดูลการเงิน
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">ขั้นถัดไปที่แนะนำ</div>
+        <h3 class="card-title" style="font-size: 18px;">เก็บ baseline เอง หนึ่งสัปดาห์</h3>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          จับเวลาในร้านเป้าหมายเจ็ดวัน: เวลารอคิว, เวลาจากสั่งถึงเสิร์ฟจานแรก, เวลาจากขอบิลถึงจ่ายจบ,
+          จำนวนครั้งที่ลูกค้าเรียกพนักงานต่อโต๊ะ และจำนวนพนักงานต่อกะ
+          ห้าตัวเลขนี้แปลงข้อค้นพบทั้งหมดในรายงานนี้ให้เป็นเป้าที่พิสูจน์ได้ในบริบทของคุณเอง
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="src" style="border-top: 2px solid var(--color-text); padding-top: 22px;">
+    <h2 style="margin: 0 0 6px; font-size: 26px;">แหล่งอ้างอิง</h2>
+    <p style="margin: 0 0 20px; font-size: 13px; color: var(--color-neutral-800);">
+      สืบค้นและเข้าถึงทั้งหมดเมื่อ 7 กันยายน 2569 · วันที่กำกับหลังชื่อคือวันเผยแพร่ของเนื้อหาที่อ้าง
+    </p>
+    <ol style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 12px; font-size: 14.5px; line-height: 1.6;">
+      <li id="r1">โพสต์ทูเดย์. “ร้านอาหารปี 69 ‘โตแต่ไม่กำไร’ เจอแรงกดดันต้นทุนสูง บุฟเฟต์-พรีเมียมอ่วม” — อ้างประมาณการศูนย์วิจัยกสิกรไทย, 19 พ.ค. 2569. <a href="https://www.posttoday.com/smart-sme/742618">posttoday.com/smart-sme/742618</a></li>
+      <li id="r2">เส้นทางเศรษฐี / ข่าวสด. “ธุรกิจร้านอาหารและเครื่องดื่ม ปี 2569 แม้โต 2.5% แต่กำไรลดลง จากต้นทุนที่สูงขึ้น”, พ.ค. 2569. <a href="https://www.khaosod.co.th/sentangsedtee/featured/article_325965">khaosod.co.th/sentangsedtee/featured/article_325965</a></li>
+      <li id="r3">ศูนย์วิจัยกสิกรไทย. “ธุรกิจร้านอาหารและร้านเครื่องดื่มปี 68 คาดขยายตัว 4.6% มูลค่าตลาด 657,000 ล้านบาท”, ธ.ค. 2567. <a href="https://www.kasikornresearch.com/th/analysis/k-social-media/Pages/IAO111-Restaurant-Industry-FB-16-12-2024.aspx">kasikornresearch.com</a></li>
+      <li id="r4">ไทยรัฐ Money. “ปฏิวัติวงการร้านอาหาร บาร์บีคิวพลาซ่า เปิดตัวระบบ GON ORDER-TO-PAY”, 19 ส.ค. 2567. <a href="https://www.thairath.co.th/money/business_marketing/marketing_trends/2809021">thairath.co.th/money/…/2809021</a></li>
+      <li id="r5">THE STANDARD. “เทรนด์เปลี่ยนเร็วเป็นเหตุให้ Bar B Q Plaza ระบบใหม่ GON ORDER-TO-PAY”, 20 ส.ค. 2567 · และ Positioning. “บาร์บีคิวพลาซ่าได้อะไรจากการลงระบบ GON ORDER-TO-PAY” (ระบุผู้พัฒนา Hato Hub, 2 ปี), 21 ส.ค. 2567. <a href="https://thestandard.co/bar-b-q-plaza-gon-order-to-pay/">thestandard.co</a> · <a href="https://positioningmag.com/1487145">positioningmag.com/1487145</a></li>
+      <li id="r6">Marketeer Online. “บาร์บีคิวพลาซ่า อัประบบให้ ‘สั่ง-จ่าย-จบ’ ใน QR Code เดียว” (baseline 10 นาที + 10 นาที), 20 ส.ค. 2567. <a href="https://marketeeronline.co/archives/371136">marketeeronline.co/archives/371136</a></li>
+      <li id="r7">MenuForma. “QR Code Ordering in 2025: How Restaurants Worldwide Are Embracing Digital Menus”, 2568. <em>บล็อกของผู้ขาย — ใช้เฉพาะข้อมูลบริบทต่างประเทศ (ฮ่องกง, static QR) และตัวเลข 2–3% ที่เราถือว่ายังไม่ยืนยัน.</em> <a href="https://menuforma.com/blog/qr-code-ordering-trends-2025-restaurant-technology">menuforma.com</a></li>
+      <li id="r8">eMenu Thailand. “Best Restaurant POS Systems in Thailand (2026): An Honest Comparison”, ปรับปรุง 27 ก.ค. 2569. <em>ผู้เขียนเป็นผู้ขายรายหนึ่งในบทเทียบ (ประกาศ conflict of interest); ราคาแต่ละรายอ้างจากเว็บของผู้ขายนั้น.</em> <a href="https://emenuthailand.com/blog/tpost/best-restaurant-pos-systems-thailand-2026">emenuthailand.com</a></li>
+      <li id="r9">LINE MAN Wongnai Merchant Center. “ร้านจะทำการตลาดยังไง? ในยุคที่คนหวงข้อมูลส่วนตัว” (ม.19, ค่าปรับสูงสุด 5 ล้านบาทต่อกรณี). <a href="https://lmwnmerchantcenter.com/tips-tricks-content/restaurant-data-marketing-and-pdpa-guide">lmwnmerchantcenter.com</a></li>
+      <li id="r10">Torpenguin. “กฎหมาย PDPA ร้านอาหาร ที่ผู้ประกอบการต้องรู้” (บังคับใช้ 1 มิ.ย. 2565) · PEAK. “PDPA กับการจัดเก็บข้อมูล” (สิทธิตาม ม.19 และ ม.23). <a href="https://www.torpenguin.com/%E0%B8%81%E0%B8%8E%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%A2-pdpa-%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%AD%E0%B8%B2%E0%B8%AB%E0%B8%B2%E0%B8%A3/">torpenguin.com</a> · <a href="https://www.peakaccount.com/blog/business/gen-biz/biz-pdpa-accounting-data">peakaccount.com</a></li>
+      <li id="r11">THE STANDARD. “ว่างงานแตะ 4 แสนคน แต่ตำแหน่งที่ว่างกลับหา ‘คนไทย’ มาทำไม่ได้” — อ้างรายงานสภาพัฒน์ 24 ส.ค. 2569. <a href="https://thestandard.co/thai-unemployment-foreign-workers-gap/">thestandard.co/thai-unemployment-foreign-workers-gap</a></li>
+      <li id="r12">FoodStory. “ใหม่! จัดการคิวง่ายด้วย Queue Display ระบบจัดการคิวและออเดอร์”, ก.พ. 2568. <a href="https://foodstory.co/2025/02/13/queue_display_education/">foodstory.co/2025/02/13/queue_display_education</a></li>
+      <li id="r13">THE INSIDER. “QueQ: ปฏิวัติการจองคิวร้านอาหารด้วยเทคโนโลยีที่เข้าใจผู้ใช้”, ธ.ค. 2568. <a href="https://theinsider.cm/ceo-insider/queq/">theinsider.cm/ceo-insider/queq</a></li>
+      <li id="r14">Wongnai. “30 ร้านบุฟเฟ่ต์อิ่มไม่อั้น (ไม่จำกัดเวลา)” และรายการร้านหมูกระทะกรุงเทพ · Lemon8. “บุฟเฟ่ต์หมูกระทะ 99–299 บาท”. <em>ใช้เป็นหลักฐานเชิงบริบทเรื่องช่วงราคาและรูปแบบร้านเท่านั้น ไม่ใช่สถิติตลาด.</em> <a href="https://www.wongnai.com/listings/buffets-no-limit-time">wongnai.com/listings/buffets-no-limit-time</a></li>
+    </ol>
+    <p style="margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--color-divider); font-size: 13px; line-height: 1.65; color: var(--color-neutral-800);">
+      <strong>หมายเหตุเรื่องความน่าเชื่อถือ:</strong> ตัวเลขตลาดในรายงานนี้มาจากสำนักวิจัยเดียว (ศูนย์วิจัยกสิกรไทย) ที่ถูกรายงานซ้ำโดยสื่อสองสำนัก
+      — เป็นการยืนยันการรายงาน ไม่ใช่การยืนยันตัวเลขโดยอิสระ
+      ตัวเลขผลลัพธ์ 46% / 87% เป็นข้อมูลที่บริษัทเปิดเผยเอง
+      ส่วนข้อเสนอเชิงสถาปัตยกรรมใน §05–§07 ระบุไว้ชัดว่าเป็นการวิเคราะห์ของผู้เขียนรายงาน ไม่ใช่ข้อค้นพบจากแหล่งข้อมูล
+    </p>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      states: [
+        { code: "S1", name: "QUEUED", note: "รับคิว · ยังไม่มีโต๊ะ · ยังสั่งอาหารไม่ได้" },
+        { code: "S2", name: "SEATED", note: "พนักงานจัดโต๊ะแล้ว · Visit เปิด · QR ใช้งานได้" },
+        { code: "S3", name: "DINING", note: "สถานะเดียวที่รับออเดอร์ใหม่ได้" },
+        { code: "S4", name: "BILL_REQUESTED", note: "ล็อกออเดอร์ใหม่ · ยอดต้องนิ่ง" },
+        { code: "S5", name: "PAID", note: "มีหลักฐานการชำระ · ยังไม่ปล่อยโต๊ะ" },
+        { code: "S6", name: "CLOSED", note: "ปล่อยโต๊ะ · QR เดิมหมดอายุทันที" },
+        { code: "S7", name: "VOIDED", note: "ยกเลิกโดยมีเหตุผลบันทึกไว้ · แยกจาก CLOSED ในรายงาน" }
+      ],
+      risks: [
+        { kicker: "ความเสี่ยง 01", tag: "การวิเคราะห์ของเรา", title: "ย้ายโต๊ะ / รวมโต๊ะ",
+          body: "หมูกระทะย้ายโต๊ะบ่อย (โต๊ะไม่พอ กลุ่มขยาย เตาเสีย) ถ้า Visit ผูกกับ table_id แบบตายตัว การย้ายจะทำให้ออเดอร์เก่าหลุด ทางแก้: Visit ถือประวัติการครองโต๊ะเป็นลิสต์ (table_assignments) ไม่ใช่ฟิลด์เดียว" },
+        { kicker: "ความเสี่ยง 02", tag: "การวิเคราะห์ของเรา", title: "แยกบิล / จ่ายบางส่วน",
+          body: "กลุ่มเพื่อนหารกันเป็นเรื่องปกติ ถ้า Visit มีได้แค่หนึ่ง payment การจ่ายคนละส่วนจะพังทั้งระบบรายงาน ทางแก้: Visit → หลาย payment ที่รวมกันต้องเท่ายอดสุทธิ และ Visit ปิดได้เมื่อยอดค้าง = 0" },
+        { kicker: "ความเสี่ยง 03", tag: "การวิเคราะห์ของเรา", title: "กดสั่งซ้ำตอนเน็ตช้า",
+          body: "ลูกค้ากดปุ่มสั่งซ้ำเมื่อหน้าไม่ตอบ เป็นสาเหตุอันดับหนึ่งของออเดอร์ผี ทางแก้: client สร้าง idempotency key ต่อการกด และ server ปฏิเสธคีย์ซ้ำภายในหน้าต่างเวลา — ใช้กฎเดียวกันกับปุ่มชำระเงิน" },
+        { kicker: "ความเสี่ยง 04", tag: "การวิเคราะห์ของเรา", title: "หลายคนสั่งพร้อมกันในโต๊ะเดียว",
+          body: "จุดขายของ QR คือทุกคนสั่งจากมือถือตัวเอง แต่ก็ทำให้เกิดการเขียนพร้อมกันในหนึ่ง Visit ทางแก้: ออเดอร์เป็น append-only event และให้ทุกเครื่องในโต๊ะเห็นรายการที่คนอื่นเพิ่มแบบเรียลไทม์ พร้อมชื่อผู้สั่งแบบไม่ระบุตัวตน (เช่น “คนที่ 2”) เพื่อเลี่ยง PII" },
+        { kicker: "ความเสี่ยง 05", tag: "การวิเคราะห์ของเรา", title: "บุฟเฟต์ต้องนับหัวและเวลา",
+          body: "หัวใจของราคาบุฟเฟต์คือจำนวนคนและเวลา ไม่ใช่รายการอาหาร Visit ต้องมี pax และเวลาที่เริ่มนับ (พร้อมเหตุผลเวลาที่แก้ไข) เพราะยอดบิลคำนวณจากสองค่านี้ — POS หลายเจ้าคิด buffet timing เป็น add-on ต่างหาก" },
+        { kicker: "ความเสี่ยง 06", tag: "การวิเคราะห์ของเรา", title: "“เรียกพนักงาน” ที่ไม่มีคนรับ",
+          body: "ปุ่มเรียกพนักงานที่ไม่มี SLA จะกลายเป็นแหล่งความไม่พอใจแทนที่จะแก้ปัญหา ทางแก้: คำเรียกทุกครั้งมีเจ้าของ (พนักงานคนหนึ่งรับ) มีเวลานับขึ้น และถ้าเกินเกณฑ์ต้องเด้งขึ้นบนสุดของ Dashboard พร้อมนับเป็นตัวชี้วัดรายกะ" }
+      ],
+      phases: [
+        { n: "01", title: "แกนกลาง: คิว → โต๊ะ → Visit", gate: "เปิด-ปิด Visit ครบ 100 ครั้งจริงโดยไม่มีสถานะค้าง",
+          body: "Staff Web อย่างเดียว รับคิว จัดโต๊ะ เปิด/ปิด Visit และรับออเดอร์แทนลูกค้าได้ ยังไม่มี Customer Web — ระยะนี้ทดแทนกระดาษได้แล้ว และเป็นทางสำรองถาวรเมื่อระบบลูกค้าล่ม" },
+        { n: "02", title: "Customer Web: สแกน สั่ง ดูสถานะ", gate: "self-service rate ≥ 50% ของออเดอร์ในโต๊ะที่เปิดใช้",
+          body: "QR → resolve → session token ผูก visit ปัจจุบัน, เมนู, ตะกร้า, สถานะอาหาร, เรียกพนักงาน, ดูยอด ยังไม่ต้องมีการชำระเงินออนไลน์ — ให้จ่ายที่เคาน์เตอร์ก่อน เพื่อแยกความเสี่ยงเรื่องเงินออกจากความเสี่ยงเรื่อง UX" },
+        { n: "03", title: "ชำระเงินและปิดบิล", gate: "ไม่มีบิลซ้ำหรือบิลหายในการทดสอบตัดเน็ตกลางการจ่าย 30 ครั้ง",
+          body: "แยกบิล จ่ายบางส่วน PromptPay QR ใบเสร็จ/ใบกำกับภาษี และ idempotency ทุกจุด ระยะนี้คือระยะที่ต้องทดสอบด้วยการตัดเน็ตจริง ไม่ใช่ทดสอบด้วย unit test เท่านั้น" },
+        { n: "04", title: "Admin + สมาชิก + แต้ม", gate: "ตัวเลขรอบโต๊ะและต้นทุนแรงงานต่อบิลตรงกับที่จับเวลาด้วยมือ",
+          body: "จัดการเมนู แพ็กเกจ Add-on พนักงาน โปรโมชั่น แดชบอร์ดยอดขาย และสมาชิก/แต้มพร้อม consent แยกวัตถุประสงค์ตาม PDPA — ระยะนี้อยู่ท้ายสุดเพราะไม่มีข้อไหนทำให้ร้านเปิดขายไม่ได้" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-e7ec5e9f-e201-4590-a3ca-0e379e46c52e/styles.css">
+<script src="_ds/industry-e7ec5e9f-e201-4590-a3ca-0e379e46c52e/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* โทนแดง-ครีมตามภาพอ้างอิงของร้าน — เขียนทับ token ของ design system ทั้งชุด */
+  :root {
+    --color-bg:      #fdf6f4;
+    --color-surface: #ffffff;
+    --color-text:    #2a1a18;
+    --color-divider: #f2dcd7;
+    --color-accent:     #b0232a;
+    --color-accent-100: #fdecea;
+    --color-accent-200: #fbd9d5;
+    --color-accent-300: #f3b7b1;
+    --color-accent-400: #e07d78;
+    --color-accent-500: #b0232a;
+    --color-accent-600: #9c1e25;
+    --color-accent-700: #86191f;
+    --color-accent-800: #6b1419;
+    --color-accent-900: #4d0e12;
+    --color-neutral-100: #f7ece9;
+    --color-neutral-700: #8a6f6a;
+    --color-neutral-800: #6d5450;
+    --radius-md: 14px;
+  }
+  body { margin: 0; background: var(--color-bg); color: var(--color-text);
+         font-family: 'Prompt', system-ui, sans-serif; }
+  h1, h2, h3, h4 { font-family: 'Prompt', system-ui, sans-serif; font-weight: 600; letter-spacing: 0; }
+  /* Prompt เป็นฟอนต์ไทย ต้องมีที่ว่างให้วรรณยุกต์และสระบน */
+  h1 { line-height: 1.18 !important; }
+  h2, h3, h4 { line-height: 1.3 !important; }
+  .card-title { line-height: 1.35 !important; }
+  a { color: var(--color-accent-700); text-decoration: none; border-bottom: 1px solid var(--color-accent-300); }
+  a:hover { color: var(--color-accent-900); border-bottom-color: var(--color-accent-700); }
+  a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  pre { margin: 0; overflow-x: auto; font-size: 12.5px; line-height: 1.65; }
+
+  /* การ์ดเป็นบล็อกขาวมุมโค้งมีเงานุ่ม แทนกรอบ wireframe */
+  .card, .blueprint {
+    border-radius: 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    box-shadow: 0 1px 2px rgba(80, 20, 16, 0.04), 0 8px 24px -16px rgba(80, 20, 16, 0.18);
+  }
+  .blueprint > .corner { display: none; }
+  .tag { border-radius: 999px; padding: 4px 12px; font-weight: 500; }
+  .btn { border-radius: 999px; }
+  .table th { color: var(--color-neutral-700); letter-spacing: 0.04em; }
+  section > div[style*="border: 1px solid var(--color-divider)"],
+  div[style*="overflow-x: auto"] { border-radius: 14px; background: var(--color-surface); }
+  nav a { border-bottom: 0 !important; }
+  nav a:hover { background: var(--color-accent-100); }
+</style>
+</helmet>
+
+<div style="max-width: 1240px; margin: 0 auto; padding: 28px 20px 90px;">
+
+  <header style="border-bottom: 2px solid var(--color-text); padding-bottom: 16px; display: flex; flex-direction: column; gap: 14px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">
+      <span>System &amp; Database Design</span><span>·</span><span>React + Supabase</span><span>·</span><span>7 ก.ย. 2569</span>
+    </div>
+    <h1 style="margin: 0; font-size: clamp(36px, 5.6vw, 66px); line-height: 0.95; letter-spacing: -0.01em;">
+      หมากระทุปุ๊ป๊ะ — การออกแบบระบบและฐานข้อมูล
+    </h1>
+    <p style="margin: 0; max-width: 76ch; font-size: 17px; line-height: 1.6; color: var(--color-neutral-800);">
+      ระบบบริหารร้านหมูกระทะบุฟเฟต์ครบวงจร แยกส่วนติดต่อผู้ใช้เป็น Customer / Staff / Admin
+      บนฐานข้อมูลชุดเดียว โดยมี <strong>Visit</strong> เป็น aggregate root ที่ผูกคิว โต๊ะ ออเดอร์ เวลา และการชำระเงินไว้ในระเบียนเดียว
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <span class="tag tag-accent" style="white-space: nowrap;">บุฟเฟต์ต่อหัว · ผู้ใหญ่ 289</span>
+      <span class="tag tag-accent" style="white-space: nowrap;">จำกัดเวลา 120 นาที</span>
+      <span class="tag tag-neutral" style="white-space: nowrap;">ไม่ใช่ a la carte</span>
+      <span class="tag tag-neutral" style="white-space: nowrap;">ลูกค้าไม่ต้องสมัครสมาชิก</span>
+      <span class="tag tag-outline" style="white-space: nowrap;">Payment / Notification = mock</span>
+      <span class="tag tag-outline" style="white-space: nowrap;">ร้านเดียว เผื่อโครงหลายสาขา</span>
+    </div>
+  </header>
+
+  <nav style="display: flex; flex-wrap: wrap; border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); margin-bottom: 46px;">
+    <a href="#s1" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">01</span> กฎธุรกิจ</a>
+    <a href="#s2" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">02</span> สถาปัตยกรรม</a>
+    <a href="#s3" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">03</span> Context &amp; DFD</a>
+    <a href="#s4" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">04</span> Activity Diagram</a>
+    <a href="#s5" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">05</span> State Machine</a>
+    <a href="#s6" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">06</span> ER Diagram</a>
+    <a href="#s7" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">07</span> Data Dictionary</a>
+    <a href="#s8" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">08</span> SQL &amp; RLS</a>
+    <a href="#s9" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">09</span> API Table</a>
+    <a href="#s10" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">10</span> เครื่องคิดเงิน</a>
+    <a href="#s11" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">11</span> การตัดสินใจออกแบบ</a>
+    <a href="#s12" style="flex: 1 1 168px; padding: 12px 14px; border: 0; border-right: 1px solid var(--color-divider); font-size: 13px; display: flex; gap: 8px;"><span style="color: var(--color-accent-700);">12</span> นอกขอบเขต</a>
+  </nav>
+
+  <section id="s1" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">01</span>
+      <h2 style="margin: 0; font-size: 30px;">กฎธุรกิจที่ระบบต้องบังคับ (Business Rules)</h2>
+    </div>
+    <p style="margin: 0 0 24px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      กฎทั้งหมดนี้เป็น <strong>กฎเงิน</strong> ไม่ใช่กฎหน้าจอ จึงบังคับที่ระดับฐานข้อมูล (CHECK / trigger) หรือ Edge Function
+      การซ่อนปุ่มใน UI อย่างเดียวถือว่าออกแบบไม่ผ่าน เพราะผู้ใช้ที่ยิง API ตรงจะข้ามกฎได้
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px;">
+      <sc-for list="{{ rules }}" as="r" hint-placeholder-count="10">
+        <article class="card blueprint">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="card-kicker">{{ r.code }}</div>
+          <h3 class="card-title" style="font-size: 18px;">{{ r.title }}</h3>
+          <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">{{ r.body }}</p>
+          <div class="card-meta" style="flex-wrap: wrap; row-gap: 4px;"><span class="tag tag-outline" style="white-space: nowrap;">บังคับที่</span><span>{{ r.where }}</span></div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="s2" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">02</span>
+      <h2 style="margin: 0; font-size: 30px;">สถาปัตยกรรมระบบ</h2>
+    </div>
+    <div style="border: 1px solid var(--color-divider); padding: 26px; margin-bottom: 22px;">
+      <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 14px;">Client Layer — React SPA</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 18px;">
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">Customer Web</div>
+          <div style="font-size: 13px; line-height: 1.6;">เปิดในเบราว์เซอร์ ไม่ต้องล็อกอิน ไม่ต้องติดตั้งแอป<br>ยืนยันสิทธิ์ด้วย <code style="font-size: 12px;">qr_token</code> ในลิงก์เท่านั้น</div>
+        </div>
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">Staff Web</div>
+          <div style="font-size: 13px; line-height: 1.6;">Supabase Auth + ยืนยัน PIN ซ้ำสำหรับรายการที่มีผลทางการเงิน<br>Realtime: <code style="font-size: 12px;">visit · order_item · service_call · queue_ticket</code></div>
+        </div>
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">Admin Web</div>
+          <div style="font-size: 13px; line-height: 1.6;">ข้อมูลหลัก (เมนู แพ็กเกจ โต๊ะ พนักงาน) + รายงาน + กู้คืนข้อมูลที่ลบ</div>
+        </div>
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">Queue Display (TV)</div>
+          <div style="font-size: 13px; line-height: 1.6;">โหมด read-only แสดงคิวที่กำลังเรียกและเวลารอโดยประมาณ แยกตามช่อง A / B / C</div>
+        </div>
+      </div>
+      <div style="text-align: center; font-size: 24px; color: var(--color-accent); line-height: 1; margin: 14px 0;">↓</div>
+      <div class="blueprint" style="padding: 18px; border-color: var(--color-accent);">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 10px;">API Layer — Supabase Edge Functions (Deno)</div>
+        <div style="font-size: 14px; line-height: 1.7;">
+          ทุกคำสั่งที่มีผลต่อเงินหรือสถานะผ่านชั้นนี้เท่านั้น เพื่อ (ก) ตรวจ <code style="font-size: 12px;">qr_token</code> ของลูกค้าที่ไม่มี JWT
+          (ข) บังคับ state machine (ค) รับ <code style="font-size: 12px;">Idempotency-Key</code> (ง) เขียน <code style="font-size: 12px;">audit_log</code> ในทรานแซกชันเดียวกัน
+          <br><strong>เหตุผลที่ Customer Web ไม่ยิง PostgREST ตรง:</strong> ลูกค้าไม่ล็อกอิน ถ้าใช้ anon key + RLS อย่างเดียว
+          จะกันการอ่านข้ามโต๊ะไม่ได้ เพราะ RLS ไม่มีตัวตนผู้ใช้ให้เทียบ
+        </div>
+      </div>
+      <div style="text-align: center; font-size: 24px; color: var(--color-accent); line-height: 1; margin: 14px 0;">↓</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 18px;">
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">PostgreSQL</div>
+          <div style="font-size: 13px; line-height: 1.6;">24 ตาราง · RLS ทุกตาราง · soft delete ด้วย <code style="font-size: 12px;">deleted_at</code> · trigger บังคับกฎธุรกิจ</div>
+        </div>
+        <div class="blueprint" style="padding: 16px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">Realtime + Storage</div>
+          <div style="font-size: 13px; line-height: 1.6;">Postgres Changes สำหรับสถานะอาหารและคิว · Storage เก็บรูปเมนูและสลิปโอน</div>
+        </div>
+        <div class="blueprint" style="padding: 16px; border-style: dashed;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 19px; margin-bottom: 8px;">External (Mock)</div>
+          <div style="font-size: 13px; line-height: 1.6;">PromptPay QR และ SMS/LINE จำลองผ่าน adapter ที่มี interface เดียวกับของจริง สลับเป็นของจริงได้โดยไม่แก้ core</div>
+        </div>
+      </div>
+    </div>
+    <p style="margin: 0; padding: 14px 16px; border-left: 3px solid var(--color-accent); background: var(--color-accent-100); font-size: 15px; line-height: 1.65;">
+      <strong>ร้านเดียวแต่เผื่อโครงหลายสาขา:</strong> ทุกตารางข้อมูลปฏิบัติการมี <code style="font-size: 13px;">branch_id</code> ตั้งแต่วันแรก
+      แต่ UI แสดงสาขาเดียวและไม่มีหน้าสลับสาขา — การขยายในอนาคตจึงไม่ต้อง migrate ข้อมูล เพียงเพิ่มแถวใน <code style="font-size: 13px;">branch</code>
+    </p>
+  </section>
+
+  <section id="s3" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">03</span>
+      <h2 style="margin: 0; font-size: 30px;">Context Diagram และ Data Flow Diagram</h2>
+    </div>
+
+    <h3 style="margin: 0 0 12px; font-size: 21px;">Context Diagram (DFD ระดับ 0)</h3>
+    <div style="border: 1px solid var(--color-divider); padding: 26px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px; align-items: stretch;">
+        <sc-for list="{{ contextLeft }}" as="e" hint-placeholder-count="3">
+          <div class="blueprint" style="padding: 14px;">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 17px; margin-bottom: 6px;">{{ e.name }}</div>
+            <div style="font-size: 12.5px; line-height: 1.55; color: var(--color-neutral-800);">{{ e.flows }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="text-align: center; font-size: 20px; color: var(--color-accent); margin: 14px 0;">↕</div>
+      <div class="blueprint" style="padding: 22px; border-color: var(--color-accent); background: var(--color-accent-900); color: var(--color-bg); text-align: center;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px;">Process 0</div>
+        <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 28px;">ระบบบริหารร้านหมูกระทะ หมากระทุปุ๊ป๊ะ</div>
+      </div>
+      <div style="text-align: center; font-size: 20px; color: var(--color-accent); margin: 14px 0;">↕</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px;">
+        <sc-for list="{{ contextRight }}" as="e" hint-placeholder-count="3">
+          <div class="blueprint" style="padding: 14px; border-style: dashed;">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 17px; margin-bottom: 6px;">{{ e.name }}</div>
+            <div style="font-size: 12.5px; line-height: 1.55; color: var(--color-neutral-800);">{{ e.flows }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin: 18px 0 0; font-size: 13px; line-height: 1.6; color: var(--color-neutral-800);">
+        กรอบเส้นประ = external entity ที่จำลองไว้ (mock) แต่ยังต้องแสดงในไดอะแกรม เพราะเป็นจุดที่ข้อมูลออกนอกขอบเขตระบบ
+      </p>
+    </div>
+
+    <h3 style="margin: 0 0 12px; font-size: 21px;">DFD ระดับ 1 — กระบวนการหลักหกกระบวนการ</h3>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="min-width: 44px;">No.</th>
+            <th style="min-width: 150px;">กระบวนการ</th>
+            <th style="min-width: 180px;">Input (จาก)</th>
+            <th style="min-width: 180px;">Output (ไป)</th>
+            <th style="min-width: 170px;">Data store ที่แตะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ dfd }}" as="p" hint-placeholder-count="6">
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--color-accent-800);">{{ p.no }}</td>
+              <td><strong>{{ p.name }}</strong></td>
+              <td style="font-size: 13px;">{{ p.input }}</td>
+              <td style="font-size: 13px;">{{ p.output }}</td>
+              <td style="font-size: 12.5px; font-family: 'JetBrains Mono', monospace;">{{ p.stores }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s4" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">04</span>
+      <h2 style="margin: 0; font-size: 30px;">Activity Diagram — เส้นทางหลักตั้งแต่รับคิวถึงปิดโต๊ะ</h2>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <sc-for list="{{ activity }}" as="a" hint-placeholder-count="12">
+        <div class="blueprint" style="padding: 14px 16px; display: flex; gap: 16px; align-items: flex-start;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--color-accent-700); min-width: 26px; padding-top: 3px;">{{ a.n }}</div>
+          <div style="min-width: 92px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-700); padding-top: 4px;">{{ a.lane }}</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; flex: 1;">
+            <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 18px; line-height: 1.2;">{{ a.step }}</div>
+            <div style="font-size: 13.5px; line-height: 1.6;">{{ a.detail }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <p style="margin: 20px 0 0; padding: 14px 16px; border: 1px dashed var(--color-accent-400); font-size: 14px; line-height: 1.65;">
+      <strong>เส้นทางแทรก (alternate flows) ที่ต้องเขียนโค้ดจริง:</strong> เรียกคิวครบ 3 ครั้งไม่มาให้ตัดเป็น no-show ·
+      โต๊ะไม่พอให้กดเพิ่มโต๊ะบน Visit เดิม · โทรศัพท์ลูกค้าแบตหมดให้พนักงานสั่งแทนจาก Staff Web ·
+      เน็ตหลุดให้ Staff Web ทำงานโหมด degraded แล้ว sync ภายหลัง
+    </p>
+  </section>
+
+  <section id="s5" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">05</span>
+      <h2 style="margin: 0; font-size: 30px;">Visit State Machine</h2>
+    </div>
+    <p style="margin: 0 0 22px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      Visit คือหัวใจของระบบ สถานะทั้งเจ็ดนี้เป็นค่า <code style="font-size: 14px;">ENUM</code> ในฐานข้อมูล
+      และ trigger จะปฏิเสธการเปลี่ยนสถานะที่ไม่มีในตารางด้านล่าง — ไม่ใช่แค่ซ่อนปุ่ม
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px;">
+      <sc-for list="{{ states }}" as="st" hint-placeholder-count="7">
+        <div class="blueprint" style="flex: 1 1 150px; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--color-accent-700);">{{ st.code }}</div>
+          <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 18px; line-height: 1.15;">{{ st.name }}</div>
+          <div style="font-size: 12px; line-height: 1.5; color: var(--color-neutral-800);">{{ st.note }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="min-width: 130px;">จาก → ไป</th>
+            <th style="min-width: 130px;">ใครสั่งได้</th>
+            <th style="min-width: 260px;">เงื่อนไข (guard)</th>
+            <th style="min-width: 180px;">ผลข้างเคียง</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ transitions }}" as="t" hint-placeholder-count="8">
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">{{ t.move }}</td>
+              <td style="font-size: 13px;">{{ t.who }}</td>
+              <td style="font-size: 13px;">{{ t.guard }}</td>
+              <td style="font-size: 13px;">{{ t.effect }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s6" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">06</span>
+      <h2 style="margin: 0; font-size: 30px;">ER Diagram</h2>
+    </div>
+    <p style="margin: 0 0 22px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      แบ่งเป็นห้ากลุ่ม (ใช้เป็นสีเดียวกันทั้งหมดตามระบบออกแบบ — แยกด้วยหัวข้อไม่ใช่สี)
+      <code style="font-size: 14px;">PK</code> = primary key, <code style="font-size: 14px;">FK</code> = foreign key
+    </p>
+    <sc-for list="{{ erGroups }}" as="g" hint-placeholder-count="5">
+      <div style="margin-bottom: 30px;">
+        <h3 style="margin: 0 0 4px; font-size: 20px;">{{ g.title }}</h3>
+        <p style="margin: 0 0 14px; font-size: 13.5px; line-height: 1.6; color: var(--color-neutral-800);">{{ g.note }}</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px;">
+          <sc-for list="{{ g.entities }}" as="e" hint-placeholder-count="4">
+            <div class="blueprint" style="padding: 0; overflow: hidden;">
+              <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+              <div style="padding: 10px 14px; border-bottom: 1px solid var(--color-divider); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--color-accent-800);">{{ e.name }}</div>
+              <div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 3px;">
+                <sc-for list="{{ e.fields }}" as="f" hint-placeholder-count="5">
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.5;">{{ f }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+    <h3 style="margin: 0 0 12px; font-size: 20px;">ความสัมพันธ์หลัก (Cardinality)</h3>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead>
+          <tr><th style="min-width: 230px;">ความสัมพันธ์</th><th style="min-width: 80px;">แบบ</th><th style="min-width: 300px;">เหตุผลเชิงธุรกิจ</th></tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ relations }}" as="rel" hint-placeholder-count="9">
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">{{ rel.rel }}</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--color-accent-800);">{{ rel.card }}</td>
+              <td style="font-size: 13px;">{{ rel.why }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s7" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">07</span>
+      <h2 style="margin: 0; font-size: 30px;">Data Dictionary — ตารางแกนกลาง</h2>
+    </div>
+    <sc-for list="{{ dictionary }}" as="d" hint-placeholder-count="4">
+      <div style="margin-bottom: 28px;">
+        <h3 style="margin: 0 0 4px; font-size: 19px; font-family: 'JetBrains Mono', monospace; color: var(--color-accent-800);">{{ d.table }}</h3>
+        <p style="margin: 0 0 12px; font-size: 13.5px; line-height: 1.6;">{{ d.purpose }}</p>
+        <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+          <table class="table">
+            <thead>
+              <tr><th style="min-width: 150px;">คอลัมน์</th><th style="min-width: 130px;">ชนิด</th><th style="min-width: 90px;">Key/Null</th><th style="min-width: 260px;">คำอธิบาย</th></tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ d.cols }}" as="c" hint-placeholder-count="6">
+                <tr>
+                  <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">{{ c.n }}</td>
+                  <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--color-neutral-800);">{{ c.t }}</td>
+                  <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--color-accent-800);">{{ c.k }}</td>
+                  <td style="font-size: 13px;">{{ c.d }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </sc-for>
+    <h3 style="margin: 0 0 12px; font-size: 19px;">ตารางที่เหลือ (สรุป)</h3>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead><tr><th style="min-width: 160px;">ตาราง</th><th style="min-width: 300px;">หน้าที่</th><th style="min-width: 200px;">คอลัมน์สำคัญ</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ otherTables }}" as="o" hint-placeholder-count="12">
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--color-accent-800);">{{ o.t }}</td>
+              <td style="font-size: 13px;">{{ o.p }}</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">{{ o.c }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s8" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">08</span>
+      <h2 style="margin: 0; font-size: 30px;">SQL — DDL, Trigger และ RLS Policy</h2>
+    </div>
+    <p style="margin: 0 0 20px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      โค้ดชุดนี้รันบน Supabase ได้ตรง แสดงเฉพาะส่วนที่บังคับกฎธุรกิจสำคัญ
+      (สคีมาเต็มอยู่ใน migration ไฟล์เดียวกัน)
+    </p>
+    <div style="display: flex; flex-direction: column; gap: 22px;">
+      <sc-for list="{{ sql }}" as="s" hint-placeholder-count="5">
+        <div class="blueprint" style="padding: 0; overflow: hidden;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="padding: 11px 16px; border-bottom: 1px solid var(--color-divider); display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline;">
+            <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 18px;">{{ s.title }}</span>
+            <span style="font-size: 12.5px; color: var(--color-neutral-800);">{{ s.note }}</span>
+          </div>
+          <div style="padding: 16px; background: var(--color-neutral-100);">
+            <pre>{{ s.code }}</pre>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="s9" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">09</span>
+      <h2 style="margin: 0; font-size: 30px;">API Endpoint Table</h2>
+    </div>
+    <p style="margin: 0 0 20px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      ทุก endpoint เป็น Supabase Edge Function ที่ <code style="font-size: 14px;">/functions/v1/...</code>
+      คอลัมน์ Auth บอกว่าใครเรียกได้ · คอลัมน์ Idem บอกว่าต้องส่ง <code style="font-size: 14px;">Idempotency-Key</code> หรือไม่
+    </p>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="min-width: 60px;">Method</th>
+            <th style="min-width: 210px;">Path</th>
+            <th style="min-width: 200px;">หน้าที่</th>
+            <th style="min-width: 120px;">Auth</th>
+            <th style="min-width: 56px;">Idem</th>
+            <th style="min-width: 180px;">ข้อผิดพลาดหลัก</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ api }}" as="a" hint-placeholder-count="16">
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--color-accent-800);">{{ a.m }}</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">{{ a.path }}</td>
+              <td style="font-size: 13px;">{{ a.job }}</td>
+              <td style="font-size: 12.5px;">{{ a.auth }}</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">{{ a.idem }}</td>
+              <td style="font-size: 12.5px;">{{ a.err }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s10" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">10</span>
+      <h2 style="margin: 0; font-size: 30px;">เครื่องคิดเงิน (Pricing Engine)</h2>
+    </div>
+    <p style="margin: 0 0 22px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      ร้านไม่ใช่ a la carte จึง <strong>ไม่มีราคาต่อจาน</strong> —
+      <code style="font-size: 14px;">order_item</code> เก็บเพียงจำนวนและสถานะ ไม่มี <code style="font-size: 14px;">line_total</code>
+      ยอดบิลทั้งหมดมาจากสามองค์ประกอบเท่านั้น
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px; margin-bottom: 24px;">
+      <div class="blueprint" style="padding: 18px;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 8px;">องค์ประกอบ 1</div>
+        <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 20px; margin-bottom: 8px;">ค่าแพ็กเกจตามหัว</div>
+        <div style="font-size: 13.5px; line-height: 1.65;">ผู้ใหญ่ 289 · เด็ก (ราคาเด็ก) · เด็กเล็กสูงไม่เกิน 90 ซม. ฟรี<br>เก็บเป็นแถวใน <code style="font-size: 12px;">visit_pax</code> แยกตาม tier</div>
+      </div>
+      <div class="blueprint" style="padding: 18px;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 8px;">องค์ประกอบ 2</div>
+        <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 20px; margin-bottom: 8px;">Add-on รายคน</div>
+        <div style="font-size: 13.5px; line-height: 1.65;">น้ำรีฟิล 39 บาท/คน เลือกได้รายคน เก็บเป็น <strong>จำนวน</strong> ไม่ระบุตัวบุคคล<br>คิดครั้งเดียวต่อ Visit ไม่คิดซ้ำเมื่อต่อรอบ</div>
+      </div>
+      <div class="blueprint" style="padding: 18px;">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 8px;">องค์ประกอบ 3</div>
+        <div style="font-family: 'Prompt', system-ui, sans-serif; font-size: 20px; margin-bottom: 8px;">ค่าเกินเวลา</div>
+        <div style="font-size: 13.5px; line-height: 1.65;">เกิน 120 นาที คิดเต็มรอบใหม่ตามราคา tier ของแต่ละคน<br>เตือนล่วงหน้าที่นาทีที่ 105 · ไม่มี grace period</div>
+      </div>
+    </div>
+    <div class="blueprint" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div style="padding: 11px 16px; border-bottom: 1px solid var(--color-divider); font-family: 'Prompt', system-ui, sans-serif; font-size: 18px;">สูตรคำนวณ (นำไปเขียนเป็น SQL function ได้ตรง)</div>
+      <div style="padding: 16px; background: var(--color-neutral-100);"><pre>{{ formula }}</pre></div>
+    </div>
+    <h3 style="margin: 0 0 12px; font-size: 20px;">ตัวอย่างการคิดเงินจริง</h3>
+    <div style="overflow-x: auto; border: 1px solid var(--color-divider); padding: 4px 14px 8px;">
+      <table class="table">
+        <thead><tr><th style="min-width: 210px;">สถานการณ์</th><th style="min-width: 260px;">การคำนวณ</th><th style="min-width: 100px;">ยอดสุทธิ</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="4">
+            <tr>
+              <td style="font-size: 13px;">{{ ex.case }}</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">{{ ex.calc }}</td>
+              <td style="font-family: 'Prompt', system-ui, sans-serif; font-size: 20px; color: var(--color-accent-800);">{{ ex.total }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin: 20px 0 0; padding: 14px 16px; border-left: 3px solid var(--color-accent); background: var(--color-accent-100); font-size: 15px; line-height: 1.65;">
+      <strong>การแยกบิลรองรับสองแบบ:</strong> (1) หารเท่ากันตามจำนวนหัวที่จ่ายเงิน — ยอดต่อคนคือ <code style="font-size: 13px;">ceil(net_total / paying_pax)</code>
+      เศษบาทตกที่คนแรก และ (2) จ่ายเป็นก้อนเท่าไรก็ได้จนครบยอด
+      ทั้งสองแบบใช้ตาราง <code style="font-size: 13px;">payment</code> หลายแถวต่อ <code style="font-size: 13px;">bill</code> เดียว
+      และปิด Visit ได้เมื่อ <code style="font-size: 13px;">SUM(payment.amount) = bill.net_total</code> เท่านั้น
+    </p>
+  </section>
+
+  <section id="s11" style="margin-bottom: 62px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">11</span>
+      <h2 style="margin: 0; font-size: 30px;">การตัดสินใจออกแบบและเหตุผล</h2>
+    </div>
+    <p style="margin: 0 0 22px; max-width: 84ch; font-size: 16px; line-height: 1.7;">
+      ส่วนนี้บันทึกทางเลือกที่พิจารณาแล้วไม่เลือก เพื่อให้ตรวจสอบเหตุผลย้อนหลังได้ (Architecture Decision Record ย่อ)
+    </p>
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <sc-for list="{{ decisions }}" as="d" hint-placeholder-count="7">
+        <div class="blueprint" style="padding: 18px;">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin-bottom: 8px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--color-accent-700);">{{ d.id }}</span>
+            <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 20px; line-height: 1.2;">{{ d.title }}</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px;">
+            <div>
+              <div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 5px;">เลือก</div>
+              <div style="font-size: 13.5px; line-height: 1.6;">{{ d.chosen }}</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 5px;">ไม่เลือก</div>
+              <div style="font-size: 13.5px; line-height: 1.6;">{{ d.rejected }}</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 5px;">เหตุผล</div>
+              <div style="font-size: 13.5px; line-height: 1.6;">{{ d.why }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="s12" style="border-top: 2px solid var(--color-text); padding-top: 22px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px;">
+      <span style="font-family: 'Prompt', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.18em; color: var(--color-accent-700);">12</span>
+      <h2 style="margin: 0; font-size: 28px;">ข้อจำกัดและสิ่งที่อยู่นอกขอบเขต</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 20px;">
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">นอกขอบเขต</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          รีวิว/คะแนนความพอใจ (ตัดออกตามที่ตกลง) · เดลิเวอรี · หลายสาขาในหน้าจอ · ระบบเงินเดือน ·
+          BOM ตัดสต๊อกอัตโนมัติ (ร้านบุฟเฟต์คิดจากน้ำหนักที่ตักไม่ได้จริง จึงใช้การนับมือรายวันแทน)
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">จำลอง (mock)</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          PromptPay QR ไม่มี webhook จริง — พนักงานกดยืนยันการรับเงินแทน ·
+          SMS/LINE แจ้งคิวเขียนลงตาราง <code style="font-size: 12px;">notification_log</code> ไม่ส่งออกจริง ·
+          ใบกำกับภาษีออกเป็น PDF ตัวอย่าง ยังไม่ผ่านการตรวจข้อกำหนดสรรพากร
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">สมมติฐานที่ต้องยืนยันกับร้าน</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          ไม่มี grace period หลัง 120 นาที · ราคาเด็กยังไม่กำหนดตัวเลข (ใส่เป็นค่าคอนฟิกใน <code style="font-size: 12px;">package_price</code>) ·
+          Add-on รีฟิลคิดครั้งเดียวไม่คิดซ้ำเมื่อต่อรอบ · ค่าเกินเวลาไม่คิดกับเด็กเล็กที่ฟรี
+        </p>
+      </div>
+      <div class="card blueprint">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="card-kicker">PDPA</div>
+        <p class="card-body" style="font-size: 14px; line-height: 1.65; opacity: 0.9;">
+          ตาราง <code style="font-size: 12px;">visit</code> ไม่เก็บ PII เลย · เบอร์โทรที่ใช้เรียกคิวเป็นข้อมูลส่วนบุคคล
+          มี job ลบอัตโนมัติเมื่อปิดโต๊ะเกิน 24 ชม. · consent ของสมาชิกแยกเป็นรายวัตถุประสงค์ในตาราง <code style="font-size: 12px;">member_consent</code>
+          และถอนได้เท่าที่ให้ ตาม ม.19
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      rules: [
+        { code: "BR-01", title: "ออเดอร์รับได้เฉพาะสถานะ DINING", body: "Visit ที่ยังไม่ได้ที่นั่ง หรือขอบิลแล้ว หรือปิดแล้ว จะเพิ่มออเดอร์ไม่ได้ทุกช่องทาง รวมถึงพนักงาน", where: "trigger บน order_batch + guard ใน Edge Function" },
+        { code: "BR-02", title: "QR ผูกกับ visit ไม่ใช่โต๊ะ", body: "qr_token สร้างตอนเช็คอินและผูก visit_id ปิดโต๊ะแล้ว token หมดอายุทันที ลูกค้าโต๊ะถัดไปที่ถ่ายรูป QR เก่าไว้จะเห็นหน้า 'มื้อนี้จบแล้ว'", where: "คอลัมน์ qr_token UNIQUE + ตรวจ visit.status ทุก request" },
+        { code: "BR-03", title: "เพิ่มคนได้ ลดคนไม่ได้", body: "จำนวนคนแต่ละ tier ปรับขึ้นได้ตลอดมื้อ แต่ห้ามลด เพราะเป็นช่องให้เลี่ยงค่าบุฟเฟต์ที่กินไปแล้ว การแก้ลงต้องให้หัวหน้ากะยกเลิกทั้ง Visit", where: "trigger เทียบค่าเก่า: NEW.qty >= OLD.qty" },
+        { code: "BR-04", title: "นาฬิกาเดียวต่อ Visit", body: "จับเวลาจาก visit.seated_at เท่านั้น คนที่มาเพิ่มกลางมื้อและโต๊ะที่กดเพิ่มภายหลัง ใช้นาฬิกาเดิม หมดเวลาพร้อมกันทั้ง Visit", where: "คอลัมน์ seated_at + view คำนวณ elapsed_minutes" },
+        { code: "BR-05", title: "เกิน 120 นาที คิดเต็มรอบใหม่", body: "คิดตามราคา tier ของแต่ละคน ไม่คิดกับเด็กเล็กที่ฟรี เตือนล่วงหน้าที่นาทีที่ 105 ผ่าน service_call อัตโนมัติเข้า Dashboard", where: "SQL function fn_calc_bill()" },
+        { code: "BR-06", title: "ปิด Visit ได้เมื่อยอดค้างเป็นศูนย์", body: "รองรับหลาย payment ต่อหนึ่ง bill (หารเท่ากันตามหัว หรือจ่ายเป็นก้อน) แต่ห้ามปิดถ้า SUM(payment.amount) ยังไม่เท่า bill.net_total", where: "trigger ก่อน UPDATE visit.status = CLOSED" },
+        { code: "BR-07", title: "รวมบิลได้เฉพาะโต๊ะจากคิวเดียวกัน", body: "bill_group อ้าง queue_ticket_id ทุก visit ในกลุ่มต้องมี queue_ticket_id เดียวกัน ป้องกันการรวมบิลผิดกลุ่มลูกค้า", where: "CHECK + trigger ตรวจ queue_ticket_id ตรงกัน" },
+        { code: "BR-08", title: "ค่าเกินเวลาคิดแยกตามโต๊ะ", body: "แม้รวมบิล แต่ละ Visit มีนาฬิกาของตัวเอง ค่าเกินเวลาจึงคำนวณต่อ Visit แล้วรวมยอดในขั้น bill_group ไม่ใช่คิดจากโต๊ะแรกหรือโต๊ะสุดท้าย", where: "fn_calc_bill() ต่อ visit แล้ว SUM ที่ bill_group" },
+        { code: "BR-09", title: "no-show หลังเรียกครบ 3 ครั้ง", body: "เรียกคิวห่างกัน 2 นาที ครบ 3 ครั้งแล้วยังไม่มา ตัดเป็น NO_SHOW โดยบันทึกผู้กดและเวลาทุกครั้งที่เรียก", where: "queue_call log + job ตรวจเงื่อนไข" },
+        { code: "BR-10", title: "ลบคือ soft delete เท่านั้น", body: "ทุกตารางมี deleted_at ไม่มี DELETE จริงในระบบ เจ้าของร้านและหัวหน้ากะกู้คืนได้เองจากหน้า Admin ทุกการลบและกู้คืนลง audit_log", where: "RLS ซ่อน deleted_at IS NOT NULL + REVOKE DELETE" }
+      ],
+      contextLeft: [
+        { name: "ลูกค้า (Customer)", flows: "ส่ง: ขอคิว, สั่งอาหาร, เรียกพนักงาน, ชำระเงิน\nรับ: เลขคิว, สถานะอาหาร, เวลาคงเหลือ, ยอดบิล" },
+        { name: "พนักงาน (Staff)", flows: "ส่ง: เรียกคิว, จัดโต๊ะ, เปิด/ปิด Visit, อัปเดตสถานะอาหาร, ยืนยันรับเงิน\nรับ: Dashboard เรียลไทม์, รายการรอเสิร์ฟ, คำเรียกบริการ" },
+        { name: "หัวหน้ากะ / เจ้าของร้าน", flows: "ส่ง: ข้อมูลเมนู แพ็กเกจ โต๊ะ พนักงาน โปรโมชั่น, คำสั่งกู้คืนข้อมูล\nรับ: รายงานยอดขาย, รอบโต๊ะ, เมนูยอดนิยม, audit log" }
+      ],
+      contextRight: [
+        { name: "Payment Gateway (mock)", flows: "ส่งออก: คำขอสร้าง PromptPay QR (จำนวนเงิน, reference)\nรับเข้า: ผลการชำระ — ในเวอร์ชันนี้พนักงานกดยืนยันแทน webhook" },
+        { name: "Notification Gateway (mock)", flows: "ส่งออก: ข้อความแจ้งคิวใกล้ถึง / โต๊ะพร้อม ทาง SMS หรือ LINE\nรับเข้า: สถานะการส่ง (จำลอง เขียนลง notification_log)" },
+        { name: "ระบบบัญชี / สรรพากร", flows: "ส่งออก: ใบเสร็จและใบกำกับภาษี (PDF ตัวอย่าง), สรุปยอดขายรายวัน\nยังไม่เชื่อมต่ออัตโนมัติในขอบเขตนี้" }
+      ],
+      dfd: [
+        { no: "1.0", name: "จัดการคิว", input: "ข้อมูลกลุ่ม (จำนวนคน) จากลูกค้า · คำสั่งเรียกคิวจากพนักงาน", output: "เลขคิว A/B/C + เวลารอโดยประมาณ → ลูกค้าและ Queue TV · ข้อความแจ้งเตือน → Notification Gateway", stores: "D1 queue_ticket, D2 queue_call" },
+        { no: "2.0", name: "จัดโต๊ะและเปิด Visit", input: "คิวที่เรียกแล้ว · จำนวนคนแยก tier · การยืนยันส่วนสูงเด็กเล็ก", output: "qr_token + ลิงก์เมนู → ลูกค้า · ผังโต๊ะที่อัปเดต → Staff", stores: "D3 visit, D4 visit_table, D5 visit_pax, D6 dining_table" },
+        { no: "3.0", name: "รับออเดอร์", input: "รายการอาหารที่ลูกค้าเลือก (ผ่าน qr_token) หรือพนักงานสั่งแทน", output: "รายการรอเตรียม → หน้าจอครัว · สถานะอาหารเรียลไทม์ → ลูกค้า", stores: "D7 order_batch, D8 order_item, D9 menu_item" },
+        { no: "4.0", name: "จัดการบริการและเวลา", input: "คำเรียกพนักงานจากลูกค้า · เวลาที่ผ่านไปจาก seated_at", output: "งานบริการที่มีเจ้าของ → Staff · แจ้งเตือนเหลือ 15 นาที → ลูกค้าและ Staff", stores: "D10 service_call, D3 visit" },
+        { no: "5.0", name: "คิดเงินและชำระเงิน", input: "คำขอเช็กบิล · วิธีแยกบิล · การยืนยันรับเงินจากพนักงาน", output: "ใบแจ้งยอด → ลูกค้า · คำขอ QR → Payment Gateway · ใบเสร็จ → ลูกค้า", stores: "D11 bill, D12 payment, D13 bill_group" },
+        { no: "6.0", name: "รายงานและข้อมูลหลัก", input: "ข้อมูลเมนู/แพ็กเกจ/โต๊ะ/พนักงาน · ผลนับสต๊อกรายวัน", output: "รายงานยอดขาย รอบโต๊ะ เมนูยอดนิยม ช่วงเวลาหนาแน่น → เจ้าของร้าน", stores: "D14 package, D15 stock_count, D16 audit_log" }
+      ],
+      activity: [
+        { n: "01", lane: "Customer", step: "มาถึงร้าน กดรับคิว", detail: "กรอกจำนวนคน ระบบเลือกช่องคิวให้เอง: A (1-2 คน) / B (3-4) / C (5+) ได้เลขเช่น A-023 พร้อมเวลารอโดยประมาณ" },
+        { n: "02", lane: "System", step: "คำนวณเวลารอโดยประมาณ", detail: "จากจำนวนคิวที่รออยู่ในช่องเดียวกัน คูณเวลาเฉลี่ยต่อรอบของโต๊ะขนาดนั้นในสามสิบวันหลัง" },
+        { n: "03", lane: "Staff", step: "เรียกคิว", detail: "กดเรียกจาก Dashboard ขึ้นบน Queue TV และส่งข้อความ (mock) เรียกได้สูงสุด 3 ครั้ง ห่างกัน 2 นาที ครบแล้วตัดเป็น NO_SHOW" },
+        { n: "04", lane: "Staff", step: "จัดโต๊ะและยืนยันจำนวนคน", detail: "เลือกโต๊ะหนึ่งโต๊ะต่อคิว ระบุจำนวนผู้ใหญ่/เด็ก และกดยืนยันเด็กเล็กสูงไม่เกิน 90 ซม. ที่ได้ฟรี" },
+        { n: "05", lane: "System", step: "เปิด Visit + ออก QR", detail: "สร้าง visit (SEATED), visit_table, visit_pax, qr_token และเริ่มนาฬิกา 120 นาทีที่ seated_at พิมพ์ QR ที่ผูกบิลใบนี้ให้ลูกค้า" },
+        { n: "06", lane: "Customer", step: "สแกน QR สั่งอาหาร", detail: "เปิดในเบราว์เซอร์ ไม่ต้องล็อกอิน เลือก add-on น้ำรีฟิลรายคน แล้วสั่งอาหารได้หลายรอบ ทุกคนในโต๊ะสั่งพร้อมกันจากมือถือตัวเอง" },
+        { n: "07", lane: "System", step: "เปลี่ยนสถานะเป็น DINING", detail: "ออเดอร์แรกที่สำเร็จเปลี่ยน visit.status จาก SEATED เป็น DINING หลังจากนี้เท่านั้นที่รับออเดอร์ใหม่ได้" },
+        { n: "08", lane: "Staff", step: "อัปเดตสถานะอาหาร", detail: "หน้าจอครัว (ครัวเดียว ไม่แยกสถานี) เปลี่ยนสถานะ PENDING → PREPARING → SERVED ลูกค้าเห็นเรียลไทม์" },
+        { n: "09", lane: "System", step: "เตือนเหลือ 15 นาที", detail: "ที่นาทีที่ 105 สร้าง service_call ชนิด TIME_WARNING เข้า Dashboard และแจ้งลูกค้าบนหน้าเว็บ" },
+        { n: "10", lane: "Customer", step: "กดขอเช็กบิล", detail: "visit → BILL_REQUESTED ล็อกการสั่งใหม่ทันที ระบบสร้าง bill พร้อม snapshot ราคาและจำนวนคนที่คิดเงิน" },
+        { n: "11", lane: "Customer", step: "เลือกวิธีจ่าย", detail: "หารเท่ากันตามหัว หรือจ่ายเป็นก้อนจนครบยอด ผ่าน PromptPay QR (mock) เงินสด หรือโอนแล้วพนักงานยืนยัน" },
+        { n: "12", lane: "Staff", step: "ยืนยันรับเงินและปิดโต๊ะ", detail: "ยืนยันด้วย PIN ระบบตรวจ SUM(payment) = net_total แล้วจึงให้ปิด visit → PAID → CLOSED และปล่อยโต๊ะกลับเข้าผังพร้อมทำให้ qr_token หมดอายุ" }
+      ],
+      states: [
+        { code: "S1", name: "QUEUED", note: "รับคิวแล้ว ยังไม่มีโต๊ะ สั่งอาหารไม่ได้" },
+        { code: "S2", name: "SEATED", note: "เปิด Visit นาฬิกาเริ่มเดิน QR ใช้งานได้" },
+        { code: "S3", name: "DINING", note: "สถานะเดียวที่รับออเดอร์ใหม่ได้" },
+        { code: "S4", name: "BILL_REQUESTED", note: "ล็อกออเดอร์ใหม่ ยอดต้องนิ่ง" },
+        { code: "S5", name: "PAID", note: "ยอดค้างเป็นศูนย์ แต่ยังไม่ปล่อยโต๊ะ" },
+        { code: "S6", name: "CLOSED", note: "ปล่อยโต๊ะ qr_token หมดอายุทันที" },
+        { code: "S7", name: "VOIDED", note: "ยกเลิกโดยมีเหตุผลบันทึกไว้ ไม่นับในรายงานยอดขาย" }
+      ],
+      transitions: [
+        { move: "QUEUED → SEATED", who: "พนักงาน", guard: "โต๊ะว่าง และจำนวนที่นั่งพอกับจำนวนคน (หรือหัวหน้ากะอนุมัติกรณีให้กลุ่มเล็กนั่งโต๊ะใหญ่)", effect: "ตั้ง seated_at, สร้าง qr_token, โต๊ะเป็น OCCUPIED" },
+        { move: "QUEUED → NO_SHOW", who: "ระบบ", guard: "เรียกครบ 3 ครั้ง ห่างกันครั้งละ 2 นาที", effect: "คิวถัดไปในช่องเดียวกันเลื่อนขึ้น" },
+        { move: "SEATED → DINING", who: "ระบบ", guard: "มีออเดอร์แรกสำเร็จ", effect: "บันทึก first_order_at ใช้วัด KPI" },
+        { move: "DINING → DINING", who: "ลูกค้า/พนักงาน", guard: "elapsed ยังไม่ถึงเวลาปิดร้าน และ Idempotency-Key ไม่ซ้ำ", effect: "เพิ่ม order_batch ใหม่ (append-only)" },
+        { move: "DINING → BILL_REQUESTED", who: "ลูกค้า/พนักงาน", guard: "ไม่มีรายการค้างสถานะ PENDING ที่ยังไม่ยืนยัน", effect: "สร้าง bill + snapshot ราคา, ตั้ง bill_requested_at" },
+        { move: "BILL_REQUESTED → DINING", who: "หัวหน้ากะ", guard: "ยังไม่มี payment ใดบันทึกไว้", effect: "ยกเลิก bill (soft delete) เขียน audit_log" },
+        { move: "BILL_REQUESTED → PAID", who: "พนักงาน + PIN", guard: "SUM(payment.amount) = bill.net_total", effect: "ตั้ง paid_at" },
+        { move: "PAID → CLOSED", who: "พนักงาน", guard: "ไม่มีเงื่อนไขเพิ่ม", effect: "โต๊ะกลับเป็น AVAILABLE, qr_token หมดอายุ, ตั้ง closed_at" },
+        { move: "ทุกสถานะ → VOIDED", who: "หัวหน้ากะ + PIN", guard: "ต้องกรอกเหตุผล (void_reason) ไม่ต่ำกว่า 10 ตัวอักษร", effect: "เขียน audit_log, ไม่นับใน view รายงานยอดขาย" }
+      ],
+      erGroups: [
+        {
+          title: "กลุ่ม 1 — โครงร้านและผู้ใช้",
+          note: "ข้อมูลหลักที่เปลี่ยนไม่บ่อย ทุกตารางมี branch_id เพื่อเผื่อหลายสาขา",
+          entities: [
+            { name: "branch", fields: ["branch_id  PK", "name", "address", "open_time / close_time", "deleted_at"] },
+            { name: "staff", fields: ["staff_id  PK", "branch_id  FK", "auth_user_id  FK (Supabase)", "full_name", "role  ENUM(STAFF, SUPERVISOR, OWNER)", "pin_hash", "is_active", "deleted_at"] },
+            { name: "zone", fields: ["zone_id  PK", "branch_id  FK", "name  (ห้องแอร์ / นอกอาคาร)", "deleted_at"] },
+            { name: "dining_table", fields: ["table_id  PK", "branch_id  FK", "zone_id  FK", "table_no", "seat_capacity", "status  ENUM(AVAILABLE, OCCUPIED, CLEANING, RESERVED)", "deleted_at"] }
+          ]
+        },
+        {
+          title: "กลุ่ม 2 — คิวและการจอง",
+          note: "เลขคิวมีอักษรนำตามขนาดกลุ่มและรีเซ็ตรายวัน จึง unique ต่อ (branch, วันที่, ช่อง)",
+          entities: [
+            { name: "queue_ticket", fields: ["queue_ticket_id  PK", "branch_id  FK", "service_date  DATE", "lane  ENUM(A, B, C)", "seq_no  INT", "party_size  INT", "phone  (ลบอัตโนมัติ)", "status  ENUM(WAITING, CALLED, SEATED, NO_SHOW, CANCELLED)", "created_at", "UNIQUE(branch, service_date, lane, seq_no)"] },
+            { name: "queue_call", fields: ["queue_call_id  PK", "queue_ticket_id  FK", "called_by  FK staff", "called_at", "call_no  INT (1-3)"] },
+            { name: "reservation", fields: ["reservation_id  PK", "branch_id  FK", "table_id  FK", "reserved_for  TIMESTAMPTZ", "party_size", "hold_until  = reserved_for + 15 นาที", "status  ENUM(HELD, SEATED, RELEASED)", "deleted_at"] },
+            { name: "notification_log", fields: ["notification_id  PK", "queue_ticket_id  FK", "channel  ENUM(SMS, LINE)", "payload  JSONB", "sent_at", "is_mock  BOOLEAN DEFAULT true"] }
+          ]
+        },
+        {
+          title: "กลุ่ม 3 — Visit (แกนกลางของระบบ)",
+          note: "Visit หนึ่งแถวคือการใช้บริการหนึ่งครั้งของกลุ่มลูกค้าหนึ่งกลุ่ม เวลา ออเดอร์ และเงินอ้างมาที่นี่ทั้งหมด",
+          entities: [
+            { name: "visit", fields: ["visit_id  PK", "branch_id  FK", "queue_ticket_id  FK (nullable)", "package_id  FK", "bill_group_id  FK (nullable)", "status  ENUM(7 สถานะ)", "seated_at  ← นาฬิกาเริ่มที่นี่", "first_order_at / bill_requested_at", "paid_at / closed_at", "duration_minutes  (snapshot 120)", "void_reason", "deleted_at"] },
+            { name: "visit_table", fields: ["visit_table_id  PK", "visit_id  FK", "table_id  FK", "assigned_at", "released_at  (nullable)", "หมายเหตุ: รองรับกดเพิ่มโต๊ะบน Visit เดิม"] },
+            { name: "visit_pax", fields: ["visit_pax_id  PK", "visit_id  FK", "tier  ENUM(ADULT, CHILD, TODDLER_FREE)", "qty  INT CHECK (qty >= 0)", "unit_price  (snapshot)", "UNIQUE(visit_id, tier)"] },
+            { name: "visit_addon", fields: ["visit_addon_id  PK", "visit_id  FK", "addon_id  FK", "qty  INT  ← เก็บเป็นจำนวน ไม่ระบุตัวบุคคล", "unit_price  (snapshot)"] },
+            { name: "qr_session", fields: ["qr_session_id  PK", "visit_id  FK", "token  TEXT UNIQUE", "issued_at", "expires_at  ← ตั้งเมื่อปิดโต๊ะ", "revoked_at"] }
+          ]
+        },
+        {
+          title: "กลุ่ม 4 — เมนูและออเดอร์",
+          note: "ร้านไม่ใช่ a la carte จึงไม่มีราคาต่อจาน order_item เก็บแค่จำนวนและสถานะ",
+          entities: [
+            { name: "package", fields: ["package_id  PK", "branch_id  FK", "name", "duration_minutes  DEFAULT 120", "overtime_mode  ENUM(FULL_ROUND)", "is_active", "deleted_at"] },
+            { name: "package_price", fields: ["package_price_id  PK", "package_id  FK", "tier  ENUM(ADULT, CHILD, TODDLER_FREE)", "price  NUMERIC(10,2)", "effective_from  DATE", "UNIQUE(package_id, tier, effective_from)"] },
+            { name: "addon", fields: ["addon_id  PK", "branch_id  FK", "name  (น้ำรีฟิล)", "price  NUMERIC(10,2)", "charge_basis  ENUM(PER_HEAD, PER_TABLE)", "is_active", "deleted_at"] },
+            { name: "menu_category", fields: ["category_id  PK", "branch_id  FK", "name", "sort_order", "deleted_at"] },
+            { name: "menu_item", fields: ["menu_item_id  PK", "category_id  FK", "package_id  FK (อยู่ในแพ็กเกจใด)", "name", "image_path", "is_available  ← 86 list", "sort_order", "deleted_at"] },
+            { name: "order_batch", fields: ["order_batch_id  PK", "visit_id  FK", "source  ENUM(CUSTOMER, STAFF)", "created_by  FK staff (nullable)", "idempotency_key  TEXT UNIQUE", "created_at"] },
+            { name: "order_item", fields: ["order_item_id  PK", "order_batch_id  FK", "menu_item_id  FK", "qty  INT CHECK (qty > 0)", "status  ENUM(PENDING, PREPARING, SERVED, CANCELLED)", "cancel_reason", "served_at", "ไม่มีคอลัมน์ราคา — โดยเจตนา"] },
+            { name: "service_call", fields: ["service_call_id  PK", "visit_id  FK", "type  ENUM(WATER, UTENSIL, BILL, TIME_WARNING, OTHER)", "status  ENUM(OPEN, ACCEPTED, DONE)", "accepted_by  FK staff", "created_at / accepted_at / done_at"] }
+          ]
+        },
+        {
+          title: "กลุ่ม 5 — เงิน สต๊อก และการตรวจสอบ",
+          note: "bill_group คือชั้นที่รวมบิลหลายโต๊ะจากคิวเดียวกัน payment เป็นหลายแถวต่อหนึ่งบิลเพื่อรองรับการหารกัน",
+          entities: [
+            { name: "bill_group", fields: ["bill_group_id  PK", "branch_id  FK", "queue_ticket_id  FK  ← ทุก visit ในกลุ่มต้องมาจากคิวนี้", "created_by  FK staff", "created_at", "deleted_at"] },
+            { name: "bill", fields: ["bill_id  PK", "visit_id  FK UNIQUE", "package_subtotal", "addon_subtotal", "overtime_rounds  INT", "overtime_subtotal", "discount_amount", "net_total  NUMERIC(10,2)", "split_mode  ENUM(EQUAL_PER_HEAD, CUSTOM_AMOUNT)", "issued_at", "deleted_at"] },
+            { name: "payment", fields: ["payment_id  PK", "bill_id  FK", "method  ENUM(PROMPTPAY, CASH, TRANSFER)", "amount  NUMERIC(10,2) CHECK (amount > 0)", "reference  (เลขอ้างอิง/สลิป)", "confirmed_by  FK staff", "idempotency_key  TEXT UNIQUE", "paid_at"] },
+            { name: "member", fields: ["member_id  PK", "phone  UNIQUE", "display_name", "points_balance", "created_at", "deleted_at"] },
+            { name: "member_consent", fields: ["consent_id  PK", "member_id  FK", "purpose  ENUM(LOYALTY, MARKETING)", "granted_at", "revoked_at  ← ถอนได้ตาม ม.19", "policy_version"] },
+            { name: "point_transaction", fields: ["point_txn_id  PK", "member_id  FK", "visit_id  FK", "points_delta  INT", "reason", "created_at"] },
+            { name: "inventory_item", fields: ["inventory_item_id  PK", "branch_id  FK", "name", "unit  (กก. / ถาด)", "deleted_at"] },
+            { name: "stock_count", fields: ["stock_count_id  PK", "inventory_item_id  FK", "count_date  DATE", "opening_qty / closing_qty", "waste_qty  ← ของเสีย", "counted_by  FK staff", "note"] },
+            { name: "audit_log", fields: ["audit_id  PK", "table_name / record_id", "action  ENUM(INSERT, UPDATE, SOFT_DELETE, RESTORE)", "actor_staff_id  FK", "before  JSONB / after  JSONB", "created_at", "append-only — ไม่มี UPDATE/DELETE"] }
+          ]
+        }
+      ],
+      relations: [
+        { rel: "queue_ticket 1 — 1 visit", card: "1:1", why: "1 คิว = 1 โต๊ะตามที่ตกลง หากโต๊ะไม่พอให้กดเพิ่มโต๊ะบน Visit เดิม ไม่สร้าง Visit ใหม่" },
+        { rel: "visit 1 — N visit_table", card: "1:N", why: "กลุ่มใหญ่ที่นั่งสองโต๊ะเป็น Visit เดียว จึงใช้นาฬิกาและบิลร่วมกัน" },
+        { rel: "visit 1 — N visit_pax", card: "1:N (สูงสุด 3)", why: "แยกแถวตาม tier ผู้ใหญ่/เด็ก/เด็กเล็กฟรี เพื่อคิดเงินและค่าเกินเวลาตามราคาของแต่ละกลุ่ม" },
+        { rel: "bill_group 1 — N visit", card: "1:N", why: "รวมบิลข้ามโต๊ะได้เฉพาะ Visit ที่มี queue_ticket_id เดียวกัน" },
+        { rel: "visit 1 — 1 bill", card: "1:1", why: "หนึ่ง Visit มีบิลได้ใบเดียว การรวมบิลเกิดที่ชั้น bill_group ไม่ใช่ที่ bill" },
+        { rel: "bill 1 — N payment", card: "1:N", why: "รองรับหารเท่ากันตามหัวและจ่ายเป็นก้อน ปิดได้เมื่อผลรวมเท่ายอดสุทธิ" },
+        { rel: "visit 1 — N order_batch", card: "1:N", why: "สั่งได้หลายรอบตลอดมื้อ แต่ละรอบมี idempotency_key กันการกดซ้ำ" },
+        { rel: "order_batch 1 — N order_item", card: "1:N", why: "หนึ่งครั้งที่กดสั่งมีหลายรายการ สถานะอาหารอยู่ระดับ item เพราะเสิร์ฟไม่พร้อมกัน" },
+        { rel: "package 1 — N package_price", card: "1:N", why: "ราคาแยกตาม tier และมี effective_from เพื่อเก็บประวัติเมื่อขึ้นราคา ไม่ทับข้อมูลบิลเก่า" },
+        { rel: "member 1 — N member_consent", card: "1:N", why: "ความยินยอมแยกเป็นรายวัตถุประสงค์ตาม PDPA ถอนเฉพาะการตลาดได้โดยยังสะสมแต้มต่อ" }
+      ],
+      dictionary: [
+        {
+          table: "visit",
+          purpose: "แกนกลางของระบบ หนึ่งแถวคือการใช้บริการหนึ่งครั้ง เวลาทั้งหมดที่ใช้วัด KPI อยู่ในตารางนี้",
+          cols: [
+            { n: "visit_id", t: "UUID", k: "PK", d: "รหัสการใช้บริการ ใช้เป็น reference บนใบเสร็จ" },
+            { n: "branch_id", t: "UUID", k: "FK, NOT NULL", d: "สาขา — เผื่อขยายหลายสาขาโดยไม่ต้อง migrate" },
+            { n: "queue_ticket_id", t: "UUID", k: "FK, NULL", d: "คิวต้นทาง เป็น NULL ได้กรณีลูกค้าจองล่วงหน้าหรือพนักงานเปิดโต๊ะเอง" },
+            { n: "package_id", t: "UUID", k: "FK, NOT NULL", d: "แพ็กเกจบุฟเฟต์ที่ใช้ ใช้ดึงราคาและระยะเวลา" },
+            { n: "bill_group_id", t: "UUID", k: "FK, NULL", d: "กลุ่มรวมบิล เป็น NULL เมื่อจ่ายแยกโต๊ะตามปกติ" },
+            { n: "status", t: "visit_status", k: "NOT NULL", d: "ENUM 7 ค่า ควบคุมด้วย trigger ตามตาราง transition ใน §05" },
+            { n: "seated_at", t: "TIMESTAMPTZ", k: "NOT NULL", d: "จุดเริ่มนาฬิกา 120 นาที — โต๊ะและคนที่เพิ่มภายหลังใช้ค่านี้ร่วมกัน" },
+            { n: "first_order_at", t: "TIMESTAMPTZ", k: "NULL", d: "ใช้คำนวณ KPI time-to-first-bite" },
+            { n: "bill_requested_at", t: "TIMESTAMPTZ", k: "NULL", d: "จุดล็อกการสั่งใหม่ และจุดเริ่มวัด checkout latency" },
+            { n: "paid_at / closed_at", t: "TIMESTAMPTZ", k: "NULL", d: "paid_at = ยอดค้างเป็นศูนย์ · closed_at = ปล่อยโต๊ะแล้ว สองค่านี้แยกกันเพื่อวัดเวลาเก็บโต๊ะ" },
+            { n: "duration_minutes", t: "INT", k: "NOT NULL", d: "snapshot ระยะเวลาแพ็กเกจ (120) เพื่อไม่ให้บิลเก่าเปลี่ยนเมื่อร้านแก้แพ็กเกจ" },
+            { n: "void_reason", t: "TEXT", k: "NULL", d: "บังคับกรอกไม่ต่ำกว่า 10 ตัวอักษรเมื่อสถานะเป็น VOIDED" },
+            { n: "deleted_at", t: "TIMESTAMPTZ", k: "NULL", d: "soft delete — RLS ซ่อนแถวที่มีค่านี้จากทุก role ยกเว้นหน้ากู้คืน" }
+          ]
+        },
+        {
+          table: "visit_pax",
+          purpose: "จำนวนคนแยกตามช่วงราคา เป็นตัวตั้งของทั้งค่าบุฟเฟต์ ค่าเกินเวลา และการหารบิล",
+          cols: [
+            { n: "visit_pax_id", t: "UUID", k: "PK", d: "" },
+            { n: "visit_id", t: "UUID", k: "FK, NOT NULL", d: "UNIQUE ร่วมกับ tier — หนึ่ง tier มีได้แถวเดียวต่อ Visit" },
+            { n: "tier", t: "pax_tier", k: "NOT NULL", d: "ADULT / CHILD / TODDLER_FREE" },
+            { n: "qty", t: "INT", k: "CHECK qty >= 0", d: "trigger ห้ามค่าใหม่น้อยกว่าค่าเดิม (เพิ่มได้ ลดไม่ได้)" },
+            { n: "unit_price", t: "NUMERIC(10,2)", k: "NOT NULL", d: "snapshot ราคาตอนเช็คอิน — TODDLER_FREE เก็บเป็น 0.00" },
+            { n: "height_verified_by", t: "UUID", k: "FK, NULL", d: "พนักงานที่กดยืนยันส่วนสูงไม่เกิน 90 ซม. บังคับมีค่าเมื่อ tier = TODDLER_FREE" }
+          ]
+        },
+        {
+          table: "order_item",
+          purpose: "รายการอาหารที่สั่ง — ไม่มีคอลัมน์ราคาโดยเจตนา เพราะร้านคิดเงินต่อหัวไม่ใช่ต่อจาน",
+          cols: [
+            { n: "order_item_id", t: "UUID", k: "PK", d: "" },
+            { n: "order_batch_id", t: "UUID", k: "FK, NOT NULL", d: "รอบการกดสั่ง ใช้จัดกลุ่มแสดงในหน้าจอครัว" },
+            { n: "menu_item_id", t: "UUID", k: "FK, NOT NULL", d: "เมนูที่สั่ง" },
+            { n: "qty", t: "INT", k: "CHECK qty > 0", d: "จำนวนที่สั่ง" },
+            { n: "status", t: "order_status", k: "NOT NULL", d: "PENDING → PREPARING → SERVED หรือ CANCELLED (ต้องมีเหตุผล)" },
+            { n: "cancel_reason", t: "TEXT", k: "NULL", d: "บังคับกรอกเมื่อ status = CANCELLED หลังส่งครัวแล้ว" },
+            { n: "served_at", t: "TIMESTAMPTZ", k: "NULL", d: "ใช้วัดเวลาเสิร์ฟเฉลี่ยต่อกะ" }
+          ]
+        },
+        {
+          table: "payment",
+          purpose: "การชำระเงินหนึ่งครั้ง หนึ่งบิลมีได้หลายแถวเพื่อรองรับการหารกันในโต๊ะ",
+          cols: [
+            { n: "payment_id", t: "UUID", k: "PK", d: "" },
+            { n: "bill_id", t: "UUID", k: "FK, NOT NULL", d: "บิลที่จ่าย" },
+            { n: "method", t: "payment_method", k: "NOT NULL", d: "PROMPTPAY (mock) / CASH / TRANSFER" },
+            { n: "amount", t: "NUMERIC(10,2)", k: "CHECK amount > 0", d: "trigger ห้ามให้ผลรวมเกิน bill.net_total" },
+            { n: "reference", t: "TEXT", k: "NULL", d: "เลขอ้างอิง PromptPay หรือ path สลิปโอนใน Storage" },
+            { n: "confirmed_by", t: "UUID", k: "FK, NOT NULL", d: "พนักงานที่ยืนยันด้วย PIN — ในระบบ mock ไม่มี webhook จึงต้องมีผู้รับผิดชอบทุกแถว" },
+            { n: "idempotency_key", t: "TEXT", k: "UNIQUE", d: "กันการกดยืนยันซ้ำตอนเน็ตช้า ซึ่งเป็นสาเหตุอันดับหนึ่งของยอดเกิน" }
+          ]
+        }
+      ],
+      otherTables: [
+        { t: "branch", p: "ข้อมูลสาขา เวลาเปิด-ปิด", c: "branch_id, name, open_time, close_time" },
+        { t: "staff", p: "พนักงานและสิทธิ์ 3 บทบาท", c: "role ENUM(STAFF, SUPERVISOR, OWNER), pin_hash" },
+        { t: "zone / dining_table", p: "โซนและโต๊ะพร้อมสถานะและจำนวนที่นั่ง", c: "seat_capacity, status" },
+        { t: "queue_ticket", p: "บัตรคิว แยกช่อง A/B/C รีเซ็ตรายวัน", c: "lane, seq_no, party_size, UNIQUE(branch, date, lane, seq_no)" },
+        { t: "queue_call", p: "ประวัติการเรียกคิว ใช้ตัดสิน no-show", c: "call_no (1-3), called_by, called_at" },
+        { t: "reservation", p: "จองโต๊ะล่วงหน้า กันโต๊ะไว้ 15 นาที", c: "hold_until, status" },
+        { t: "notification_log", p: "ข้อความแจ้งคิว (mock) ไม่ส่งออกจริง", c: "channel, payload, is_mock" },
+        { t: "visit_table", p: "ประวัติการครองโต๊ะของ Visit รองรับเพิ่ม/ย้ายโต๊ะ", c: "assigned_at, released_at" },
+        { t: "visit_addon", p: "add-on รายคน เก็บเป็นจำนวนไม่ระบุตัวบุคคล", c: "qty, unit_price" },
+        { t: "qr_session", p: "token ที่ผูก Visit หมดอายุเมื่อปิดโต๊ะ", c: "token UNIQUE, expires_at, revoked_at" },
+        { t: "package / package_price", p: "แพ็กเกจและราคาแยก tier มีประวัติราคา", c: "duration_minutes, tier, price, effective_from" },
+        { t: "addon", p: "รายการเสริม เช่น น้ำรีฟิล 39 บาท/คน", c: "price, charge_basis" },
+        { t: "menu_category / menu_item", p: "หมวดหมู่และเมนู พร้อมสถานะของหมด (86 list)", c: "is_available, image_path, sort_order" },
+        { t: "order_batch", p: "รอบการกดสั่ง มี idempotency_key กันกดซ้ำ", c: "source ENUM(CUSTOMER, STAFF), idempotency_key" },
+        { t: "service_call", p: "คำเรียกพนักงาน มีเจ้าของงานและเวลานับขึ้น", c: "type, status, accepted_by" },
+        { t: "bill_group / bill", p: "รวมบิลข้ามโต๊ะจากคิวเดียวกัน และบิลต่อ Visit", c: "queue_ticket_id, net_total, split_mode" },
+        { t: "member / member_consent / point_transaction", p: "สมาชิก ความยินยอมแยกวัตถุประสงค์ และแต้ม", c: "phone UNIQUE, purpose, revoked_at, points_delta" },
+        { t: "inventory_item / stock_count", p: "วัตถุดิบและการนับสต๊อกรายวันพร้อมของเสีย", c: "opening_qty, closing_qty, waste_qty" },
+        { t: "audit_log", p: "บันทึกทุกการเปลี่ยนแปลง append-only", c: "action, actor_staff_id, before/after JSONB" },
+        { t: "app_setting", p: "ค่าคอนฟิกร้าน เช่น เวลาเตือนล่วงหน้า เกณฑ์ no-show", c: "key, value JSONB" }
+      ],
+      sql: [
+        {
+          title: "1 · ENUM และตาราง visit",
+          note: "หัวใจของสคีมา",
+          code: "create type visit_status as enum (\n  'QUEUED','SEATED','DINING','BILL_REQUESTED','PAID','CLOSED','VOIDED'\n);\ncreate type pax_tier as enum ('ADULT','CHILD','TODDLER_FREE');\n\ncreate table visit (\n  visit_id          uuid primary key default gen_random_uuid(),\n  branch_id         uuid not null references branch(branch_id),\n  queue_ticket_id   uuid references queue_ticket(queue_ticket_id),\n  package_id        uuid not null references package(package_id),\n  bill_group_id     uuid references bill_group(bill_group_id),\n  status            visit_status not null default 'SEATED',\n  seated_at         timestamptz not null default now(),\n  first_order_at    timestamptz,\n  bill_requested_at timestamptz,\n  paid_at           timestamptz,\n  closed_at         timestamptz,\n  duration_minutes  int not null default 120,\n  void_reason       text,\n  deleted_at        timestamptz,\n  constraint void_needs_reason check (\n    status <> 'VOIDED' or char_length(coalesce(void_reason,'')) >= 10\n  )\n);\n\ncreate index on visit (branch_id, status) where deleted_at is null;"
+        },
+        {
+          title: "2 · BR-03 เพิ่มคนได้ ลดคนไม่ได้",
+          note: "กฎเงิน จึงบังคับที่ฐานข้อมูล",
+          code: "create table visit_pax (\n  visit_pax_id       uuid primary key default gen_random_uuid(),\n  visit_id           uuid not null references visit(visit_id),\n  tier               pax_tier not null,\n  qty                int not null check (qty >= 0),\n  unit_price         numeric(10,2) not null,\n  height_verified_by uuid references staff(staff_id),\n  unique (visit_id, tier),\n  constraint toddler_needs_verify check (\n    tier <> 'TODDLER_FREE' or height_verified_by is not null\n  )\n);\n\ncreate function trg_pax_no_decrease() returns trigger as $$\nbegin\n  if new.qty < old.qty then\n    raise exception 'ลดจำนวนคนไม่ได้ (จาก % เป็น %) ต้องยกเลิก Visit โดยหัวหน้ากะ',\n      old.qty, new.qty;\n  end if;\n  return new;\nend $$ language plpgsql;\n\ncreate trigger pax_no_decrease before update of qty on visit_pax\n  for each row execute function trg_pax_no_decrease();"
+        },
+        {
+          title: "3 · BR-01 ออเดอร์รับได้เฉพาะ DINING",
+          note: "และเลื่อน SEATED → DINING อัตโนมัติ",
+          code: "create function trg_order_only_when_dining() returns trigger as $$\ndeclare v_status visit_status;\nbegin\n  select status into v_status from visit\n   where visit_id = new.visit_id for update;\n\n  if v_status = 'SEATED' then\n    update visit\n       set status = 'DINING', first_order_at = coalesce(first_order_at, now())\n     where visit_id = new.visit_id;\n  elsif v_status <> 'DINING' then\n    raise exception 'รับออเดอร์ไม่ได้: สถานะปัจจุบันคือ %', v_status;\n  end if;\n  return new;\nend $$ language plpgsql;\n\ncreate trigger order_only_when_dining before insert on order_batch\n  for each row execute function trg_order_only_when_dining();"
+        },
+        {
+          title: "4 · BR-06 ปิด Visit ได้เมื่อยอดค้างเป็นศูนย์",
+          note: "รองรับหลาย payment ต่อบิล",
+          code: "create function trg_close_requires_full_payment() returns trigger as $$\ndeclare v_total numeric(10,2); v_paid numeric(10,2);\nbegin\n  if new.status in ('PAID','CLOSED') and old.status = 'BILL_REQUESTED' then\n    select b.net_total, coalesce(sum(p.amount), 0)\n      into v_total, v_paid\n      from bill b\n      left join payment p on p.bill_id = b.bill_id\n     where b.visit_id = new.visit_id and b.deleted_at is null\n     group by b.net_total;\n\n    if v_paid is null or v_paid <> v_total then\n      raise exception 'ยอดค้าง % บาท ยังปิดโต๊ะไม่ได้', v_total - coalesce(v_paid,0);\n    end if;\n    new.paid_at := coalesce(new.paid_at, now());\n  end if;\n\n  if new.status = 'CLOSED' then\n    new.closed_at := now();\n    update qr_session set revoked_at = now()\n     where visit_id = new.visit_id and revoked_at is null;\n    update dining_table set status = 'CLEANING'\n     where table_id in (select table_id from visit_table\n                         where visit_id = new.visit_id and released_at is null);\n  end if;\n  return new;\nend $$ language plpgsql;\n\ncreate trigger close_requires_full_payment before update of status on visit\n  for each row execute function trg_close_requires_full_payment();"
+        },
+        {
+          title: "5 · BR-07 รวมบิลได้เฉพาะโต๊ะจากคิวเดียวกัน",
+          note: "constraint ของ bill_group",
+          code: "create function trg_bill_group_same_queue() returns trigger as $$\ndeclare v_expected uuid;\nbegin\n  if new.bill_group_id is null then return new; end if;\n\n  select queue_ticket_id into v_expected\n    from bill_group where bill_group_id = new.bill_group_id;\n\n  if new.queue_ticket_id is distinct from v_expected then\n    raise exception 'รวมบิลได้เฉพาะโต๊ะที่เช็คอินจากคิวเดียวกัน';\n  end if;\n  return new;\nend $$ language plpgsql;\n\ncreate trigger bill_group_same_queue before insert or update of bill_group_id on visit\n  for each row execute function trg_bill_group_same_queue();"
+        },
+        {
+          title: "6 · fn_calc_bill — เครื่องคิดเงิน",
+          note: "ค่าเกินเวลาคิดต่อ Visit ตาม BR-08",
+          code: "create function fn_calc_bill(p_visit_id uuid)\nreturns table (package_subtotal numeric, addon_subtotal numeric,\n               overtime_rounds int, overtime_subtotal numeric,\n               net_total numeric) as $$\ndeclare\n  v_elapsed int; v_duration int;\n  v_paid_head_total numeric; v_addon numeric; v_extra int;\nbegin\n  select duration_minutes,\n         ceil(extract(epoch from (now() - seated_at)) / 60)::int\n    into v_duration, v_elapsed\n    from visit where visit_id = p_visit_id;\n\n  -- ค่าแพ็กเกจหนึ่งรอบ (TODDLER_FREE มี unit_price = 0)\n  select coalesce(sum(qty * unit_price), 0) into v_paid_head_total\n    from visit_pax where visit_id = p_visit_id;\n\n  select coalesce(sum(qty * unit_price), 0) into v_addon\n    from visit_addon where visit_id = p_visit_id;\n\n  -- เกินเวลา = คิดเต็มรอบใหม่ ไม่มี grace period\n  v_extra := greatest(0, ceil((v_elapsed - v_duration)::numeric / v_duration)::int);\n\n  return query select\n    v_paid_head_total,\n    v_addon,\n    v_extra,\n    v_paid_head_total * v_extra,\n    v_paid_head_total * (1 + v_extra) + v_addon;\nend $$ language plpgsql;"
+        },
+        {
+          title: "7 · RLS — สามบทบาทและการซ่อน soft delete",
+          note: "ลูกค้าไม่มี policy เลย เข้าถึงผ่าน Edge Function เท่านั้น",
+          code: "alter table visit enable row level security;\nalter table audit_log enable row level security;\n\ncreate function fn_my_role() returns text as $$\n  select role::text from staff\n   where auth_user_id = auth.uid() and is_active and deleted_at is null;\n$$ language sql stable security definer;\n\n-- พนักงานเห็นเฉพาะ Visit ที่ยังไม่ถูกลบ ในสาขาของตน\ncreate policy staff_read_visit on visit for select\n  using (\n    deleted_at is null\n    and fn_my_role() in ('STAFF','SUPERVISOR','OWNER')\n    and branch_id = (select branch_id from staff where auth_user_id = auth.uid())\n  );\n\n-- หน้ากู้คืน: เห็นแถวที่ลบแล้วได้เฉพาะหัวหน้ากะและเจ้าของร้าน\ncreate policy supervisor_read_deleted on visit for select\n  using (deleted_at is not null and fn_my_role() in ('SUPERVISOR','OWNER'));\n\n-- ห้ามลบจริงทั้งระบบ\nrevoke delete on visit, bill, payment, order_item from authenticated;\n\n-- audit_log อ่านได้เฉพาะเจ้าของร้าน และเป็น append-only\ncreate policy owner_read_audit on audit_log for select\n  using (fn_my_role() = 'OWNER');\nrevoke update, delete on audit_log from authenticated;"
+        }
+      ],
+      api: [
+        { m: "POST", path: "/queue/tickets", job: "รับคิว เลือกช่อง A/B/C ตามจำนวนคน", auth: "public (rate-limited)", idem: "ต้องส่ง", err: "409 คิวปิดรับ / 400 จำนวนคนไม่ถูกต้อง" },
+        { m: "GET", path: "/queue/tickets/:id", job: "ดูลำดับคิวและเวลารอโดยประมาณ", auth: "public + token คิว", idem: "—", err: "404 ไม่พบคิว / 410 คิวถูกตัด no-show" },
+        { m: "GET", path: "/queue/board", job: "ข้อมูลสำหรับหน้าจอคิว TV (read-only)", auth: "public", idem: "—", err: "—" },
+        { m: "POST", path: "/queue/tickets/:id/call", job: "เรียกคิว (นับครั้งที่ 1-3)", auth: "STAFF ขึ้นไป", idem: "ต้องส่ง", err: "409 เรียกครบ 3 ครั้งแล้ว" },
+        { m: "POST", path: "/visits", job: "เช็คอิน: จัดโต๊ะ ระบุ pax แยก tier เปิด Visit และออก QR", auth: "STAFF + PIN", idem: "ต้องส่ง", err: "409 โต๊ะไม่ว่าง / 422 ที่นั่งไม่พอ ต้องให้ SUPERVISOR อนุมัติ" },
+        { m: "POST", path: "/visits/:id/tables", job: "กดเพิ่มโต๊ะบน Visit เดิม (กลุ่มใหญ่)", auth: "STAFF", idem: "ต้องส่ง", err: "409 โต๊ะไม่ว่าง" },
+        { m: "PATCH", path: "/visits/:id/pax", job: "เพิ่มจำนวนคนกลางมื้อ", auth: "STAFF + PIN", idem: "ต้องส่ง", err: "422 ลดจำนวนคนไม่ได้ (BR-03)" },
+        { m: "GET", path: "/c/:qrToken", job: "ข้อมูล Visit สำหรับลูกค้า: เมนู เวลาคงเหลือ ยอดปัจจุบัน", auth: "qr_token", idem: "—", err: "410 มื้อนี้จบแล้ว / 401 token ถูกเพิกถอน" },
+        { m: "POST", path: "/c/:qrToken/orders", job: "ลูกค้าสั่งอาหาร (หลายรอบ)", auth: "qr_token", idem: "ต้องส่ง", err: "409 สถานะไม่ใช่ DINING / 422 เมนูของหมด" },
+        { m: "POST", path: "/c/:qrToken/addons", job: "เลือกน้ำรีฟิลรายคน (เก็บเป็นจำนวน)", auth: "qr_token", idem: "ต้องส่ง", err: "422 จำนวนเกินจำนวนคนที่จ่ายเงิน" },
+        { m: "POST", path: "/c/:qrToken/service-calls", job: "เรียกพนักงาน (น้ำ อุปกรณ์ เช็กบิล)", auth: "qr_token", idem: "ต้องส่ง", err: "429 เรียกซ้ำเร็วเกินไป" },
+        { m: "PATCH", path: "/orders/items/:id/status", job: "อัปเดตสถานะอาหาร PENDING → PREPARING → SERVED", auth: "STAFF", idem: "ไม่ต้อง", err: "409 ข้ามสถานะไม่ได้ / 422 ยกเลิกต้องมีเหตุผล" },
+        { m: "POST", path: "/visits/:id/bill", job: "ขอเช็กบิล: ล็อกออเดอร์ เรียก fn_calc_bill สร้าง snapshot", auth: "qr_token หรือ STAFF", idem: "ต้องส่ง", err: "409 มีรายการค้างยืนยัน" },
+        { m: "POST", path: "/bill-groups", job: "รวมบิลหลายโต๊ะจากคิวเดียวกัน", auth: "SUPERVISOR + PIN", idem: "ต้องส่ง", err: "422 โต๊ะมาจากคิวต่างกัน (BR-07)" },
+        { m: "POST", path: "/bills/:id/payments", job: "บันทึกการชำระ (หารตามหัว หรือจ่ายเป็นก้อน)", auth: "STAFF + PIN", idem: "ต้องส่ง", err: "422 ผลรวมเกินยอดสุทธิ / 409 idempotency ซ้ำ" },
+        { m: "POST", path: "/visits/:id/close", job: "ปิดโต๊ะ ปล่อยโต๊ะ เพิกถอน qr_token", auth: "STAFF + PIN", idem: "ต้องส่ง", err: "422 ยอดค้างยังไม่เป็นศูนย์ (BR-06)" },
+        { m: "POST", path: "/visits/:id/void", job: "ยกเลิก Visit พร้อมเหตุผล", auth: "SUPERVISOR + PIN", idem: "ต้องส่ง", err: "422 เหตุผลสั้นกว่า 10 ตัวอักษร" },
+        { m: "POST", path: "/admin/restore", job: "กู้คืนข้อมูลที่ soft delete", auth: "SUPERVISOR / OWNER", idem: "ต้องส่ง", err: "404 ไม่พบแถวที่ลบ / 403 สิทธิ์ไม่พอ" },
+        { m: "GET", path: "/admin/reports/daily", job: "ยอดขาย จำนวนลูกค้า รอบโต๊ะ เมนูยอดนิยม ช่วงเวลาหนาแน่น", auth: "OWNER", idem: "—", err: "—" }
+      ],
+      formula: "-- หนึ่งรอบ = ค่าแพ็กเกจของทุกคนที่จ่ายเงิน\nround_total   = Σ (visit_pax.qty × visit_pax.unit_price)\n                 -- TODDLER_FREE มี unit_price = 0 จึงไม่กระทบ\n\naddon_total   = Σ (visit_addon.qty × visit_addon.unit_price)\n                 -- คิดครั้งเดียวต่อ Visit ไม่คิดซ้ำเมื่อต่อรอบ\n\nelapsed       = ceil((now() - visit.seated_at) นาที)\nextra_rounds  = max(0, ceil((elapsed - duration_minutes) / duration_minutes))\n                 -- ไม่มี grace period · เตือนล่วงหน้าที่นาทีที่ duration - 15\n\nnet_total     = round_total × (1 + extra_rounds) + addon_total - discount\n\n-- หารเท่ากันตามหัว (paying_pax = ADULT + CHILD เท่านั้น)\nper_head      = ceil(net_total / paying_pax)   -- เศษบาทตกที่คนแรก",
+      examples: [
+        { case: "ผู้ใหญ่ 4 คน เอาน้ำรีฟิล 2 คน จบใน 100 นาที", calc: "(4 × 289) × 1 + (2 × 39)\n= 1,156 + 78", total: "1,234 ฿" },
+        { case: "ผู้ใหญ่ 2 + เด็ก 1 (ราคาเด็ก 189) + เด็กเล็กฟรี 1 น้ำรีฟิล 3 ที่ จบใน 118 นาที", calc: "(2×289 + 1×189 + 1×0) + (3 × 39)\n= 767 + 117", total: "884 ฿" },
+        { case: "ผู้ใหญ่ 3 คน อยู่ 135 นาที (เกิน 15 นาที)", calc: "round_total = 867\nextra_rounds = ceil(15/120) = 1\n867 × (1 + 1)", total: "1,734 ฿" },
+        { case: "กลุ่ม 10 คน (ผู้ใหญ่ทั้งหมด) นั่ง 2 โต๊ะจากคิว C-003 รวมบิล โต๊ะแรก 130 นาที โต๊ะสอง 95 นาที", calc: "Visit A (6 คน, เกินเวลา): 1,734 × 2 = 3,468\nVisit B (4 คน, ไม่เกิน): 1,156\nbill_group = 3,468 + 1,156", total: "4,624 ฿" }
+      ],
+      decisions: [
+        { id: "ADR-01", title: "Visit เป็น aggregate root", chosen: "ตาราง visit เดียวถือ timestamp ทั้งหมด และให้ order/bill/payment อ้างมาที่นี่", rejected: "ให้ order อ้าง table_id ตรงแบบ POS ทั่วไป", why: "รอบโต๊ะและเวลารอคำนวณได้โดยไม่ join ข้ามระบบ และย้ายโต๊ะไม่ทำให้ออเดอร์หลุด" },
+        { id: "ADR-02", title: "order_item ไม่มีคอลัมน์ราคา", chosen: "เก็บเพียง qty และ status", rejected: "ใส่ unit_price / line_total ตามแบบ a la carte", why: "ร้านคิดเงินต่อหัว การมีราคาต่อจานจะสร้างแหล่งความจริงซ้อนที่ทำให้ยอดบิลไม่ตรงกัน" },
+        { id: "ADR-03", title: "add-on เก็บเป็นจำนวน ไม่ระบุตัวบุคคล", chosen: "visit_addon.qty = 'รีฟิล 3 ที่'", rejected: "สร้างตาราง guest (ที่นั่ง 1..N) เพื่อรู้ว่าใครเอารีฟิล", why: "ลด PII ตาม PDPA และไม่มีฟีเจอร์ใดต้องรู้ตัวบุคคล — การหารบิลใช้จำนวนหัวก็เพียงพอ" },
+        { id: "ADR-04", title: "นาฬิกาเดียวต่อ Visit", chosen: "จับเวลาจาก visit.seated_at เท่านั้น", rejected: "นาฬิการายคน (คนมาเพิ่มได้ 120 นาทีใหม่)", why: "นาฬิการายคนบังคับให้ต้องมีตาราง guest และทำให้หน้าจอนับเวลาซับซ้อนเกินความจำเป็นของร้าน" },
+        { id: "ADR-05", title: "รวมบิลที่ชั้น bill_group ไม่ใช่รวม Visit", chosen: "Visit แยกต่อโต๊ะ (นาฬิกาแยก) แล้วรวมยอดที่ bill_group", rejected: "ให้ Visit เดียวครองหลายโต๊ะเสมอเมื่อรวมบิล", why: "ค่าเกินเวลาคิดแยกตามโต๊ะได้ตามที่ตกลง โดยยังรวมจ่ายทีเดียวได้ — แก้ความขัดกันระหว่างสองข้อกำหนด" },
+        { id: "ADR-06", title: "Customer Web ผ่าน Edge Function ไม่ยิง PostgREST", chosen: "ตรวจ qr_token ที่ Edge Function แล้วใช้ service role ต่อ", rejected: "anon key + RLS ที่เทียบ token ในตาราง", why: "ลูกค้าไม่มี JWT ประจำตัว RLS จึงไม่มีตัวตนให้เทียบ และการเปิด anon key ให้อ่านตาราง visit เสี่ยงรั่วข้ามโต๊ะ" },
+        { id: "ADR-07", title: "Idempotency-Key ทุกจุดที่สร้างข้อมูล", chosen: "คอลัมน์ UNIQUE บน order_batch และ payment", rejected: "กันด้วยการ disable ปุ่มใน UI", why: "การกดซ้ำตอนเน็ตช้าเป็นสาเหตุอันดับหนึ่งของออเดอร์ผีและยอดเกิน ซึ่งเกิดจากฝั่ง network ไม่ใช่ฝั่งปุ่ม" },
+        { id: "ADR-08", title: "soft delete ทั้งระบบ", chosen: "deleted_at ทุกตาราง + REVOKE DELETE", rejected: "DELETE จริงแล้วพึ่ง backup", why: "พนักงานหมุนเวียนสูงและกดผิดบ่อย การกู้คืนต้องทำได้เองในหน้า Admin ไม่ใช่ต้องเรียก dev" },
+        { id: "ADR-09", title: "นับสต๊อกรายวัน ไม่ทำ BOM", chosen: "stock_count บันทึกยอดต้น-ยอดปลาย-ของเสียต่อวัน", rejected: "ตัดสต๊อกอัตโนมัติจากออเดอร์ผ่านสูตรอาหาร", why: "บุฟเฟต์ตักเองวัดปริมาณจริงต่อจานไม่ได้ ตัวเลข BOM จะดูแม่นแต่ผิด ซึ่งแย่กว่าไม่มีตัวเลข" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
