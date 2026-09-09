@@ -230,6 +230,15 @@ create policy stock_write on stock_count for all
 -- audit_log อ่านได้เฉพาะเจ้าของร้าน และเป็น append-only
 create policy owner_read_audit on audit_log for select using (fn_has_role('OWNER'));
 
+-- ── สิทธิ์ระดับตาราง ───────────────────────────────────────────────────────
+-- RLS policy ไม่ได้ให้สิทธิ์ด้วยตัวเอง มันเพียงกรองแถวหลังจากผ่าน GRANT มาแล้ว
+-- ถ้าไม่ GRANT ตรงนี้ พนักงานที่ล็อกอินจะอ่านอะไรไม่ได้เลยแม้ policy จะอนุญาต
+
+grant usage on schema public to authenticated, service_role;
+grant select, insert, update on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+grant execute on all functions in schema public to authenticated;
+
 -- ── BR-10 · ห้ามลบจริงทั้งระบบ ─────────────────────────────────────────────
 -- ไม่มี policy สำหรับ DELETE เลย และถอนสิทธิ์ที่ระดับ grant อีกชั้นหนึ่ง
 
