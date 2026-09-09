@@ -12,9 +12,17 @@
 | ชั้น | สถานะ |
 | --- | --- |
 | เอกสารสเปค | ครบ — [System Design](Read/System%20Design.md) และ [Research](Read/Moo%20Kratha%20System%20Research.md) |
-| ฐานข้อมูล (schema, trigger, RLS, seed) | เขียนครบและทดสอบกฎธุรกิจแล้ว — ดู [supabase/README.md](supabase/README.md) |
-| Edge Functions (19 endpoint ตาม §09) | ยังไม่เริ่ม |
-| หน้าเว็บ Customer / Staff / Admin / Queue TV | ยังไม่เริ่ม |
+| ฐานข้อมูล (schema, trigger, RLS, seed) | ครบและทดสอบกฎธุรกิจแล้ว — ดู [supabase/README.md](supabase/README.md) |
+| API ฝั่งลูกค้า (`/queue/*`, `/c/*`) | deploy แล้วและใช้งานได้ |
+| API ฝั่ง Staff / Admin | ยังไม่ตัดสินใจ — ดูหัวข้อด้านล่าง |
+| หน้าเว็บลูกค้า | รับคิว · ดูคิว · หน้าโต๊ะ (เมนู ออเดอร์ บิล เรียกพนักงาน) ใช้งานได้ |
+| หน้าเว็บ Staff / Admin / Queue TV | ยังไม่เริ่ม |
+
+### API ฝั่งหลังร้านยังมีสองแนวทางค้างอยู่
+
+Edge Function ที่ deploy จริงชื่อ `api` รับเฉพาะเส้นทางฝั่งลูกค้า ส่วน Staff/Admin
+ตั้งใจให้ยิง PostgREST ตรงแล้วพึ่ง RLS ขณะที่ใน [supabase/functions/](supabase/functions/)
+มีอีกชุดที่เขียนคลุมทั้ง 19 endpoint แต่ยังไม่ได้ deploy — ต้องเลือกทางเดียวก่อนทำหน้า Staff
 
 ## เอกสารต้นทาง
 
@@ -55,7 +63,22 @@
 
 ## เริ่มใช้งาน
 
-ตอนนี้มีเฉพาะชั้นฐานข้อมูล
+```bash
+cd frontend
+npm install
+npm run dev        # → http://localhost:5173
+```
+
+`npm run dev` ยิง `/api` ผ่าน proxy ไปที่ Edge Function ที่ deploy อยู่ จึงใช้งานได้ทันที
+โดยไม่ต้องรัน Supabase ในเครื่อง ตั้งค่าได้ที่ `VITE_PROXY_TARGET` ใน `.env`
+
+| เส้นทาง | ใคร |
+| --- | --- |
+| `/` | ลูกค้า — รับคิว |
+| `/q/:token` | ลูกค้า — ดูลำดับคิวของตัวเอง |
+| `/t/:token` | ลูกค้า — หน้าโต๊ะ ปลายทางของ QR |
+
+ฝั่งฐานข้อมูล
 
 ```bash
 supabase link --project-ref <project-ref>

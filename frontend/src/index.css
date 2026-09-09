@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────────────────────
+   ระบบสีและระยะของทั้งสามฝั่ง
+
+   ทั้งสามฝั่งใช้โทเคนชุดเดียวกันเพื่อให้เป็นระบบเดียว แต่ความหนาแน่นต่างกัน
+   ลูกค้าถือมือถือมือเดียว จึงเน้นปุ่มใหญ่และข้อมูลน้อย
+   พนักงานยืนทำงานมือเปียก จึงเน้นเป้ากดใหญ่แต่ข้อมูลแน่น อ่านจากระยะแขน
+   เจ้าของร้านนั่งดูบนจอใหญ่ จึงเน้นตารางและตัวเลขเทียบกันได้
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* พื้นและตัวอักษร */
+  --color-ground: #fbf7f6;
+  --color-surface: #ffffff;
+  --color-sunken: #f4ecea;
+  --color-ink: #241715;
+  --color-ink-soft: #5c4744;
+  --color-ink-faint: #8d7673;
+  --color-line: #ece0dd;
+  --color-line-strong: #dcc9c5;
+
+  /* สีหลักของแบรนด์ — แดงหมูกระทะ */
+  --color-brand-50: #fef4f3;
+  --color-brand-100: #fde5e3;
+  --color-brand-200: #fbcbc7;
+  --color-brand-300: #f4a49e;
+  --color-brand-400: #e5726c;
+  --color-brand-500: #b0232a;
+  --color-brand-600: #9c1e25;
+  --color-brand-700: #82181e;
+  --color-brand-800: #661317;
+  --color-brand-900: #4a0e11;
+
+  /* สีบอกสถานะ — ใช้สื่อความหมายเดียวกันทุกหน้าจอ ห้ามใช้ตกแต่ง */
+  --color-ok-50: #ecfdf3;
+  --color-ok-100: #d1fae0;
+  --color-ok-500: #12874a;
+  --color-ok-700: #0a6035;
+
+  --color-warn-50: #fffaeb;
+  --color-warn-100: #fef0c7;
+  --color-warn-500: #b54708;
+  --color-warn-700: #93370d;
+
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-500: #1d4ed8;
+  --color-info-700: #1e40af;
+
+  --font-sans: "Noto Sans Thai", "Inter", system-ui, sans-serif;
+
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgb(36 23 21 / 0.05), 0 1px 3px rgb(36 23 21 / 0.04);
+  --shadow-float: 0 10px 30px -12px rgb(36 23 21 / 0.25);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ตัวเลขเวลาและเงินต้องกว้างเท่ากันทุกหลัก ไม่งั้นตัวนับถอยหลังจะกระตุกตามความกว้างเลข */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ทุกอย่างที่กดได้ต้องโดนง่ายแม้มือเปียกหรือรีบ — เกณฑ์ขั้นต่ำ 44px ตาม WCAG 2.5.5 */
+button,
+[role="button"],
+a[href] {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* เคารพการตั้งค่าของผู้ใช้ที่ขอให้ลดการเคลื่อนไหว */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(176 35 42 / 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(176 35 42 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(176 35 42 / 0);
+  }
+}
+
+/* ใช้กับสิ่งที่ต้องการให้พนักงานเห็นทันทีจากอีกฝั่งห้อง เช่น คำเรียกที่ยังไม่มีคนรับ */
+.attention {
+  animation: pulse-ring 2s ease-out infinite;
+}
