@@ -1,0 +1,4 @@
+node_modules
+graphify-out/
+.playwright-mcp/
+pages-directory.png

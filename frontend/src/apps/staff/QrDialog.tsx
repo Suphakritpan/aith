@@ -68,7 +68,7 @@ export default function QrDialog({
       <img src="${dataUrl}" alt="QR" />
       <p>สแกนเพื่อดูเมนูและสั่งอาหาร</p>
       <p>หมากระทุปุ๊ป๊ะ · จำกัดเวลา 120 นาที</p>
-      <script>window.onload=()=>{window.print();}<\/script>
+      <script>window.onload=()=>{window.print();}</script>
       </body></html>`);
     win.document.close();
   }

@@ -4,7 +4,7 @@
 //    รายการที่มีผลทางการเงินต้องยืนยัน PIN ซ้ำอีกชั้น (§02)
 // 2. ลูกค้า — ไม่มี JWT เลย ใช้ qr_token ในลิงก์เป็นหลักฐานว่านั่งอยู่โต๊ะไหน (ADR-06)
 
-import { admin } from "./db.ts";
+import { admin, asUser } from "./db.ts";
 import { forbidden, gone, unauthorized } from "./errors.ts";
 
 export type StaffRole = "STAFF" | "SUPERVISOR" | "OWNER";
@@ -44,42 +44,9 @@ export async function requireStaff(req: Request, minRole: StaffRole = "STAFF"): 
 }
 
 // ── PIN ────────────────────────────────────────────────────────────────────
-// เก็บเป็น pbkdf2$<รอบ>$<salt base64>$<hash base64> ใช้ Web Crypto ที่ Deno มีในตัว
-// จึงไม่ต้องพึ่งไลบรารีภายนอกสำหรับสิ่งที่อยู่บนเส้นทางการเงิน
-
-const PBKDF2_ITERATIONS = 120_000;
-
-const toB64 = (b: ArrayBuffer) => btoa(String.fromCharCode(...new Uint8Array(b)));
-const fromB64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-
-async function derive(
-  pin: string,
-  salt: Uint8Array<ArrayBuffer>,
-  iterations: number,
-): Promise<ArrayBuffer> {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pin), "PBKDF2", false, [
-    "deriveBits",
-  ]);
-  return await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt, iterations, hash: "SHA-256" },
-    key,
-    256,
-  );
-}
-
-export async function hashPin(pin: string): Promise<string> {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const bits = await derive(pin, salt, PBKDF2_ITERATIONS);
-  return `pbkdf2$${PBKDF2_ITERATIONS}$${toB64(salt.buffer)}$${toB64(bits)}`;
-}
-
-/** เทียบแบบเวลาคงที่ เพื่อไม่ให้เดา PIN ทีละหลักจากเวลาที่ใช้ตอบ */
-function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
-  return diff === 0;
-}
+// hash จริงเก็บเป็น bcrypt (extensions.crypt) — ตั้งค่าโดย fn_set_pin (0017)
+// ตรวจผ่าน fn_verify_pin RPC เดียวกับที่ frontend เรียก ไม่เทียบ hash เองในนี้
+// เพื่อไม่ให้มีสองมาตรฐานการ hash ขัดกันอีก (เคยเป็น pbkdf2 คนละแบบกับ DB มาก่อน)
 
 /**
  * บังคับยืนยัน PIN สำหรับรายการที่มีผลทางการเงิน — เปิด Visit, รับเงิน, ปิดโต๊ะ, ยกเลิก
@@ -90,13 +57,9 @@ export async function requirePin(req: Request, staff: Staff): Promise<void> {
   if (!pin) throw forbidden("รายการนี้ต้องยืนยันด้วย PIN");
   if (!staff.pin_hash) throw forbidden("บัญชีนี้ยังไม่ได้ตั้ง PIN");
 
-  const [scheme, iterStr, saltB64, hashB64] = staff.pin_hash.split("$");
-  if (scheme !== "pbkdf2") throw forbidden("รูปแบบ PIN ที่เก็บไว้ไม่ถูกต้อง");
-
-  const bits = await derive(pin, fromB64(saltB64), Number(iterStr));
-  if (!timingSafeEqual(new Uint8Array(bits), fromB64(hashB64))) {
-    throw forbidden("PIN ไม่ถูกต้อง");
-  }
+  const { data, error } = await asUser(req).rpc("fn_verify_pin", { p_pin: pin });
+  if (error) throw forbidden("ยืนยัน PIN ไม่สำเร็จ");
+  if (!data) throw forbidden("PIN ไม่ถูกต้อง");
 }
 
 // ── ลูกค้า: qr_token ───────────────────────────────────────────────────────
