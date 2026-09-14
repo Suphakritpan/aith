@@ -40,9 +40,12 @@ router.post("/tickets", async (req) => {
       }),
     );
 
+    // ส่ง seq_no ของใบที่เพิ่งออก เพื่อให้นับเฉพาะคิวที่มาก่อนใบนี้
+    // ไม่งั้นคนแรกของช่องจะเห็น "คิวก่อนหน้า 0" คู่กับเวลารอที่ไม่ใช่ศูนย์
     const wait = await admin.rpc("fn_estimated_wait_minutes", {
       p_branch_id: branch,
       p_lane: ticket.lane,
+      p_before_seq: ticket.seq_no,
     });
 
     return {
@@ -64,7 +67,7 @@ router.post("/tickets", async (req) => {
 router.get("/tickets/:token", async (_req, { token }) => {
   const { data: ticket } = await admin
     .from("queue_ticket")
-    .select("queue_ticket_id, branch_id, lane, seq_no, party_size, status, created_at")
+    .select("queue_ticket_id, branch_id, service_date, lane, seq_no, party_size, status, created_at")
     .eq("public_token", token)
     .is("deleted_at", null)
     .maybeSingle();
@@ -73,10 +76,12 @@ router.get("/tickets/:token", async (_req, { token }) => {
   if (ticket.status === "NO_SHOW") throw gone("คิวนี้ถูกตัดแล้วเพราะเรียกครบสามครั้ง");
 
   // ลำดับที่รออยู่ = จำนวนคิวในช่องเดียวกันที่มาก่อนและยังรออยู่
+  // ต้องกรองวันด้วย เพราะ seq_no รีเซ็ตทุกวัน ใบค้างจากเมื่อวานจะถูกนับเป็นคิวก่อนหน้า
   const { count: ahead } = await admin
     .from("queue_ticket")
     .select("queue_ticket_id", { count: "exact", head: true })
     .eq("branch_id", ticket.branch_id)
+    .eq("service_date", ticket.service_date)
     .eq("lane", ticket.lane)
     .eq("status", "WAITING")
     .lt("seq_no", ticket.seq_no)
@@ -85,14 +90,28 @@ router.get("/tickets/:token", async (_req, { token }) => {
   const wait = await admin.rpc("fn_estimated_wait_minutes", {
     p_branch_id: ticket.branch_id,
     p_lane: ticket.lane,
+    p_before_seq: ticket.seq_no,
   });
+
+  // เลขที่ร้านกำลังเรียกอยู่ในช่องเดียวกัน — ลูกค้าต้องเทียบได้ว่าคิวเดินถึงไหนแล้ว
+  // ไม่ใช่เห็นแค่เลขตัวเองลอย ๆ
+  const { data: calling } = await admin
+    .from("v_queue_board")
+    .select("ticket_no")
+    .eq("branch_id", ticket.branch_id)
+    .eq("lane", ticket.lane)
+    .eq("status", "CALLED")
+    .order("seq_no")
+    .limit(1)
+    .maybeSingle();
 
   return json({
     ticket_no: `${ticket.lane}-${String(ticket.seq_no).padStart(3, "0")}`,
     status: ticket.status,
     party_size: ticket.party_size,
-    ahead_count: ahead ?? 0,
+    ahead: ahead ?? 0,
     estimated_wait_minutes: wait.data ?? null,
+    now_calling: calling?.ticket_no ?? null,
   });
 });
 

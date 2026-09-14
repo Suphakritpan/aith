@@ -33,6 +33,14 @@ export function newIdempotencyKey(): string {
   return crypto.randomUUID();
 }
 
+// ชดเชยนาฬิกาเครื่องเพี้ยน (BR-04): จับส่วนต่างจากส่วนหัว Date ของทุก response
+// แล้วให้ useNow() บวกชดเชย ไม่งั้นเวลาที่ลูกค้าเห็นเพี้ยนจากเวลาที่เซิร์ฟเวอร์ใช้คิดบิลจริง
+let clockSkewMs = 0;
+
+export function getClockSkew(): number {
+  return clockSkewMs;
+}
+
 type RequestOptions = {
   method?: "GET" | "POST" | "PATCH";
   body?: unknown;
@@ -54,6 +62,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     body: body === undefined ? undefined : JSON.stringify(body),
     signal,
   });
+
+  const dateHeader = res.headers.get("date");
+  if (dateHeader) {
+    const serverNow = Date.parse(dateHeader);
+    if (!Number.isNaN(serverNow)) clockSkewMs = serverNow - Date.now();
+  }
 
   const text = await res.text();
   const payload: unknown = text ? JSON.parse(text) : null;

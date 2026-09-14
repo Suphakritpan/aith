@@ -31,6 +31,8 @@ export type QueueTicketView = {
   status: "WAITING" | "CALLED" | "SEATED" | "NO_SHOW" | "CANCELLED";
   ahead: number;
   estimated_wait_minutes: number | null;
+  /** เลขที่ร้านกำลังเรียกอยู่ในช่องเดียวกัน — ให้ลูกค้าเทียบได้ว่าคิวเดินถึงไหน */
+  now_calling: string | null;
   /** มีค่าเมื่อพนักงานเปิดโต๊ะให้แล้ว — ใช้พาลูกค้าไปหน้าโต๊ะต่อทันที */
   qr_token: string | null;
 };

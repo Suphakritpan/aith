@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiError } from "./api";
+import { ApiError, getClockSkew } from "./api";
 
 // หน้าลูกค้าใช้การถามซ้ำตามรอบ ไม่ใช่ Realtime
 //
@@ -70,11 +70,15 @@ export function usePolling<T>(
   return { data, error, loading, refresh };
 }
 
-/** นาฬิกาที่เดินทุกวินาทีในเครื่อง ใช้กับตัวนับถอยหลังให้ลื่นโดยไม่ต้องยิง API */
+/**
+ * นาฬิกาที่เดินทุกวินาทีในเครื่อง ใช้กับตัวนับถอยหลังให้ลื่นโดยไม่ต้องยิง API
+ * บวกชดเชยส่วนต่างจากนาฬิกาเซิร์ฟเวอร์ (จับจาก response ล่าสุด) กันเครื่องตั้งเวลาเพี้ยน
+ * แล้วตัวนับกับยอดที่เซิร์ฟเวอร์คิดบิลจริงไม่ตรงกัน (BR-04)
+ */
 export function useNow(intervalMs = 1000): number {
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now() + getClockSkew());
   useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), intervalMs);
+    const id = window.setInterval(() => setNow(Date.now() + getClockSkew()), intervalMs);
     return () => window.clearInterval(id);
   }, [intervalMs]);
   return now;

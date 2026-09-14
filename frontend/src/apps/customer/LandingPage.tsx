@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router";
 import { api, ApiError, newIdempotencyKey } from "../../lib/api";
 import { Button, Card, Field, Input, Notice } from "../../design/primitives";
 import { IconAlert, IconClock, IconUsers } from "../../design/icons";
+import { loadBooking, loadTicket, saveTicket } from "../../lib/mystuff";
+import { formatBookingDateTime, SHOP } from "../../lib/shop";
 import CustomerShell from "./CustomerShell";
 
 // §04 ขั้นที่ 01 — ลูกค้ากดรับคิวเอง ระบบเลือกช่อง A/B/C ให้จากจำนวนคน
@@ -10,7 +12,9 @@ import CustomerShell from "./CustomerShell";
 // ลูกค้าไม่ได้เลือกช่องเอง เพราะช่องผูกกับขนาดโต๊ะที่ร้านมีจริง ไม่ใช่ความชอบ
 // แต่หน้าจอบอกให้รู้ว่ากำลังจะได้ช่องไหน เพื่อไม่ให้รู้สึกว่าระบบตัดสินใจลับหลัง
 
-const SIZES = [1, 2, 3, 4, 5, 6, 8, 10];
+// เลขต่อเนื่องถึงสิบ ของเดิมข้าม 7 กับ 9 ทำให้กลุ่มเจ็ดคนต้องเดาว่าควรกด 6 หรือ 8
+// ซึ่งเป็นการเดาที่ลูกค้าไม่ควรต้องเดา เพราะมันไปกำหนดขนาดโต๊ะที่จะได้
+const SIZES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 function laneFor(partySize: number): { lane: string; hint: string } {
   if (partySize <= 2) return { lane: "A", hint: "1-2 คน" };
@@ -25,6 +29,10 @@ export default function LandingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ticketNo, setTicketNo] = useState<string | null>(null);
+
+  // คิวและการจองที่เครื่องนี้เคยทำไว้ — อ่านครั้งเดียวตอนเปิดหน้า
+  const [myTicket] = useState(loadTicket);
+  const [myBooking] = useState(loadBooking);
 
   // คีย์เดียวต่อการกรอกหนึ่งชุด กดซ้ำหรือ retry จะได้คิวใบเดิม ไม่ใช่ใบใหม่ (ADR-07)
   const [idempotencyKey, setIdempotencyKey] = useState(newIdempotencyKey);
@@ -46,6 +54,8 @@ export default function LandingPage() {
         (created["queue_token"] as string | undefined);
 
       if (token) {
+        // จำไว้ก่อนออกจากหน้า ลิงก์คิวเป็นอักษรสุ่มยาว ลูกค้าจำเองไม่ได้
+        saveTicket(token, created.ticket_no ?? "");
         navigate(`/q/${token}`, { replace: true });
         return;
       }
@@ -86,6 +96,38 @@ export default function LandingPage() {
         </Notice>
       ) : null}
 
+      {/* ที่ผ่านมาปิดแท็บแล้วกลับเข้าคิวเดิมไม่ได้ ลูกค้าจึงกดรับคิวใบใหม่ทับใบเดิม
+          จุดนี้ต้องมาก่อนปุ่มรับคิว เพื่อให้เห็นก่อนตัดสินใจกด ไม่ใช่หลังจากกดไปแล้ว */}
+      {myTicket ? (
+        <Card className="attention">
+          <p className="text-sm font-semibold">คุณมีคิวอยู่แล้ว</p>
+          <p className="tabular mt-1 text-3xl font-bold text-brand-500">{myTicket.ticketNo}</p>
+          <p className="mt-1 text-xs text-ink-faint">
+            กดรับคิวใหม่จะได้อีกใบ ไม่ใช่การแก้ใบเดิม
+          </p>
+          <Link to={`/q/${myTicket.token}`}>
+            <Button block className="mt-3">
+              ดูคิวของฉัน
+            </Button>
+          </Link>
+        </Card>
+      ) : null}
+
+      {myBooking ? (
+        <Card>
+          <p className="text-sm font-semibold">การจองของคุณ</p>
+          <p className="mt-1 text-sm text-ink-soft">
+            {formatBookingDateTime(myBooking.reservedFor)} · {myBooking.partySize} คน
+          </p>
+          <p className="tabular mt-1 text-xs text-ink-faint">รหัสอ้างอิง {myBooking.ref}</p>
+          <Link to="/reserve">
+            <Button variant="outline" block className="mt-3">
+              ดูหรือยกเลิกการจอง
+            </Button>
+          </Link>
+        </Card>
+      ) : null}
+
       <Card>
         <div className="flex items-baseline justify-between">
           <p className="text-sm font-semibold">มากันกี่คน</p>
@@ -115,6 +157,8 @@ export default function LandingPage() {
 
         <p className="mt-2 text-xs text-ink-faint">
           ระบบจัดช่องคิวตามขนาดกลุ่ม เพื่อไม่ให้กลุ่มเล็กต้องรอโต๊ะใหญ่ว่าง
+          <br />
+          ช่อง A รับ 1-2 คน · ช่อง B รับ 3-4 คน · ช่อง C รับ 5 คนขึ้นไป
         </p>
       </Card>
 
