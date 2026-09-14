@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api, ApiError, newIdempotencyKey } from "../../lib/api";
 import type { Bill, BillEstimate, VisitView } from "../../lib/types";
 import { TIER_LABEL } from "../../lib/types";
-import { Button, Card, Notice } from "../../components/ui";
+import { Button, Card, Notice } from "../../design/primitives";
 import { formatBaht } from "../../lib/format";
 
 // §10 เครื่องคิดเงิน — ยอดมาจากสามองค์ประกอบเท่านั้น
@@ -36,7 +36,7 @@ function Row({
         strong ? "text-lg font-bold" : "text-[15px]"
       }`}
     >
-      <span className={strong ? "" : "text-muted-strong"}>{label}</span>
+      <span className={strong ? "" : "text-ink-soft"}>{label}</span>
       <span className="tabular">{value}</span>
     </div>
   );
@@ -66,19 +66,19 @@ export default function BillTab({ token, visit, pax, addons, estimate, bill, onD
 
   return (
     <>
-      {error ? <Notice tone="error">{error}</Notice> : null}
+      {error ? <Notice tone="brand">{error}</Notice> : null}
 
       <Card>
         <p className="text-sm font-semibold">
           {issued ? "บิลของคุณ" : "ยอดปัจจุบัน (ประมาณการ)"}
         </p>
         {!issued ? (
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-ink-faint">
             ยอดนี้เปลี่ยนได้ถ้าสั่งเพิ่มหรือเลยเวลา จะนิ่งเมื่อกดขอเช็กบิล
           </p>
         ) : null}
 
-        <div className="mt-3 divide-y divide-divider">
+        <div className="mt-3 divide-y divide-line">
           {pax.map((p) => (
             <Row
               key={p.tier}
@@ -115,7 +115,7 @@ export default function BillTab({ token, visit, pax, addons, estimate, bill, onD
       {perHead !== null ? (
         <Card>
           <p className="text-sm font-semibold">หารเท่ากันตามหัว</p>
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-ink-faint">
             คิดจาก {payingPax} คนที่จ่ายเงิน (เด็กเล็กที่ได้ฟรีไม่นับ) · เศษบาทตกที่คนแรก
           </p>
           <p className="tabular mt-2 text-3xl font-bold text-brand-500">
@@ -132,7 +132,7 @@ export default function BillTab({ token, visit, pax, addons, estimate, bill, onD
       ) : null}
 
       {!issued ? (
-        <Button size="lg" onClick={requestBill} disabled={asking}>
+        <Button size="lg" block onClick={requestBill} disabled={asking}>
           {asking ? "กำลังขอเช็กบิล…" : "ขอเช็กบิล"}
         </Button>
       ) : (

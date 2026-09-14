@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api, ApiError, newIdempotencyKey } from "../../lib/api";
 import type { MenuCategory, VisitView } from "../../lib/types";
-import { Button, Card, Notice } from "../../components/ui";
+import { Button, Card, Notice } from "../../design/primitives";
 
 // §04 ขั้นที่ 06 — ทุกคนในโต๊ะสั่งพร้อมกันจากมือถือตัวเอง สั่งได้หลายรอบ
 //
@@ -75,7 +75,7 @@ export default function MenuTab({
 
   return (
     <>
-      {error ? <Notice tone="error">{error}</Notice> : null}
+      {error ? <Notice tone="brand">{error}</Notice> : null}
       {flash ? <Notice tone="info">{flash}</Notice> : null}
 
       {disabled ? (
@@ -86,7 +86,7 @@ export default function MenuTab({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold">น้ำดื่มรีฟิลไม่อั้น</p>
-            <p className="mt-1 text-xs text-muted">
+            <p className="mt-1 text-xs text-ink-faint">
               39 บาทต่อคน เลือกเฉพาะคนที่ต้องการ · คิดครั้งเดียวตลอดมื้อ
             </p>
           </div>
@@ -103,7 +103,7 @@ export default function MenuTab({
               className={`tabular min-h-10 min-w-10 rounded-lg border px-3 text-sm font-semibold disabled:opacity-50 ${
                 chosenAddonQty === n
                   ? "border-brand-500 bg-brand-500 text-white"
-                  : "border-divider bg-surface"
+                  : "border-line bg-surface"
               }`}
             >
               {n}
@@ -115,7 +115,7 @@ export default function MenuTab({
       {menu.map((category) => (
         <Card key={category.category_id}>
           <p className="text-sm font-semibold">{category.name}</p>
-          <ul className="mt-2 divide-y divide-divider">
+          <ul className="mt-2 divide-y divide-line">
             {category.items.map((item) => {
               const qty = cart[item.menu_item_id] ?? 0;
               return (
@@ -131,7 +131,7 @@ export default function MenuTab({
                           type="button"
                           onClick={() => bump(item.menu_item_id, -1)}
                           aria-label={`ลด ${item.name}`}
-                          className="size-9 rounded-lg border border-divider text-lg font-bold"
+                          className="size-9 rounded-lg border border-line text-lg font-bold"
                         >
                           −
                         </button>
@@ -157,7 +157,7 @@ export default function MenuTab({
 
       {totalItems > 0 ? (
         <div className="sticky bottom-20 z-10">
-          <Button size="lg" onClick={submitOrder} disabled={sending || disabled}>
+          <Button size="lg" block onClick={submitOrder} disabled={sending || disabled}>
             {sending ? "กำลังส่ง…" : `ส่งออเดอร์ ${totalItems} รายการ`}
           </Button>
         </div>

@@ -3,6 +3,10 @@
 // ชนิดเหล่านี้เขียนจากคำตอบจริงของ endpoint ที่ deploy อยู่ ไม่ได้เดาจากสเปค
 // ที่ใดยังไม่แน่ใจจะมีคอมเมนต์กำกับไว้ และเขียนให้ทนต่อฟิลด์ที่หายไปได้
 
+export type StaffRole = "STAFF" | "SUPERVISOR" | "OWNER";
+
+export type TableStatus = "AVAILABLE" | "OCCUPIED" | "CLEANING" | "RESERVED";
+
 export type PaxTier = "ADULT" | "CHILD" | "TODDLER_FREE";
 
 export type VisitStatus =
@@ -145,6 +149,78 @@ export const ORDER_STATUS_LABEL: Record<OrderItemStatus, string> = {
   PREPARING: "กำลังเตรียม",
   SERVED: "เสิร์ฟแล้ว",
   CANCELLED: "ยกเลิก",
+};
+
+export const ROLE_LABEL: Record<StaffRole, string> = {
+  STAFF: "พนักงาน",
+  SUPERVISOR: "หัวหน้ากะ",
+  OWNER: "เจ้าของร้าน",
+};
+
+export const TABLE_STATUS_LABEL: Record<TableStatus, string> = {
+  AVAILABLE: "ว่าง",
+  OCCUPIED: "มีลูกค้า",
+  CLEANING: "รอเก็บโต๊ะ",
+  RESERVED: "จองไว้",
+};
+
+export const VISIT_STATUS_LABEL: Record<VisitStatus, string> = {
+  QUEUED: "รอคิว",
+  SEATED: "นั่งแล้ว",
+  DINING: "กำลังกิน",
+  BILL_REQUESTED: "ขอเช็กบิล",
+  PAID: "จ่ายแล้ว",
+  CLOSED: "ปิดโต๊ะ",
+  VOIDED: "ยกเลิก",
+};
+
+/** แถวจาก view v_visit_live — ใช้ทั้งแดชบอร์ดและผังโต๊ะ */
+export type VisitLive = {
+  visit_id: string;
+  branch_id: string;
+  status: VisitStatus;
+  seated_at: string;
+  duration_minutes: number;
+  elapsed_minutes: number;
+  remaining_minutes: number;
+  is_time_warning: boolean;
+  is_overtime: boolean;
+  paying_pax: number;
+  lane: QueueLane | null;
+  seq_no: number | null;
+  table_nos: string | null;
+  open_item_count: number;
+  open_call_count: number;
+};
+
+export type DiningTable = {
+  table_id: string;
+  table_no: string;
+  seat_capacity: number;
+  status: TableStatus;
+  zone_id: string | null;
+};
+
+export type QueueTicketRow = {
+  queue_ticket_id: string;
+  lane: QueueLane;
+  seq_no: number;
+  party_size: number;
+  status: "WAITING" | "CALLED" | "SEATED" | "NO_SHOW" | "CANCELLED";
+  phone: string | null;
+  created_at: string;
+  public_token: string;
+};
+
+export type KitchenItem = {
+  order_item_id: string;
+  status: OrderItemStatus;
+  qty: number;
+  menu_name: string;
+  order_batch_id: string;
+  ordered_at: string;
+  visit_id: string;
+  table_nos: string | null;
 };
 
 export const SERVICE_CALL_LABEL: Record<ServiceCallType, string> = {

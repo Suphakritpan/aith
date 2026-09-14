@@ -1,15 +1,15 @@
 import type { OrderBatch, OrderItemStatus } from "../../lib/types";
 import { ORDER_STATUS_LABEL } from "../../lib/types";
-import { Badge, Card } from "../../components/ui";
+import { Badge, Card } from "../../design/primitives";
 import { formatTime } from "../../lib/format";
 
 // §04 ขั้นที่ 08 — ลูกค้าเห็นสถานะอาหารเรียลไทม์ว่าครัวรับแล้วหรือยัง
 // สถานะอยู่ระดับรายการ ไม่ใช่ระดับรอบ เพราะของในหนึ่งรอบเสิร์ฟไม่พร้อมกัน
 
-const TONE: Record<OrderItemStatus, "neutral" | "brand" | "done" | "warn"> = {
+const TONE: Record<OrderItemStatus, "neutral" | "brand" | "ok" | "warn"> = {
   PENDING: "neutral",
   PREPARING: "brand",
-  SERVED: "done",
+  SERVED: "ok",
   CANCELLED: "warn",
 };
 
@@ -17,8 +17,8 @@ export default function OrdersTab({ batches }: { batches: OrderBatch[] }) {
   if (batches.length === 0) {
     return (
       <Card className="text-center">
-        <p className="text-sm text-muted-strong">ยังไม่ได้สั่งอะไรเลย</p>
-        <p className="mt-1 text-xs text-muted">เลือกจากแท็บเมนูได้เลย สั่งกี่รอบก็ได้</p>
+        <p className="text-sm text-ink-soft">ยังไม่ได้สั่งอะไรเลย</p>
+        <p className="mt-1 text-xs text-ink-faint">เลือกจากแท็บเมนูได้เลย สั่งกี่รอบก็ได้</p>
       </Card>
     );
   }
@@ -29,10 +29,10 @@ export default function OrdersTab({ batches }: { batches: OrderBatch[] }) {
         <Card key={batch.order_batch_id}>
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">รอบที่ {batches.length - index}</p>
-            <p className="tabular text-xs text-muted">{formatTime(batch.created_at)}</p>
+            <p className="tabular text-xs text-ink-faint">{formatTime(batch.created_at)}</p>
           </div>
 
-          <ul className="mt-2 divide-y divide-divider">
+          <ul className="mt-2 divide-y divide-line">
             {(batch.items ?? []).map((item) => {
               // ชื่อเมนูอาจมาแบบแบนหรือซ้อนใน menu_item ขึ้นกับรุ่นของ API
               const name = item.name ?? item.menu_item?.name ?? "รายการอาหาร";
@@ -43,7 +43,7 @@ export default function OrdersTab({ batches }: { batches: OrderBatch[] }) {
                 >
                   <span className="text-[15px]">
                     {name}
-                    <span className="tabular ml-2 text-muted">×{item.qty}</span>
+                    <span className="tabular ml-2 text-ink-faint">×{item.qty}</span>
                   </span>
                   <Badge tone={TONE[item.status] ?? "neutral"}>
                     {ORDER_STATUS_LABEL[item.status] ?? item.status}
@@ -54,7 +54,7 @@ export default function OrdersTab({ batches }: { batches: OrderBatch[] }) {
           </ul>
 
           {(batch.items ?? []).length === 0 ? (
-            <p className="mt-2 text-xs text-muted">ไม่มีรายละเอียดรายการในรอบนี้</p>
+            <p className="mt-2 text-xs text-ink-faint">ไม่มีรายละเอียดรายการในรอบนี้</p>
           ) : null}
         </Card>
       ))}

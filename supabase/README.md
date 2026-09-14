@@ -22,6 +22,8 @@
 | `0012_app_rpc_and_realtime.sql` | RPC ที่แอปเรียก (`fn_open_visit`, `fn_issue_bill`, …) และเปิด Realtime | §02, §04, §09 |
 | `0013_lock_function_execute.sql` | ถอน `EXECUTE` จาก `public`/`anon` ทุกฟังก์ชัน | ADR-06 |
 | `0016_operations_extra.sql` | เรียกคิว เพิ่มโต๊ะ เพิ่มคน รวมบิล ยกเลิก กู้คืน รายงาน และที่เก็บ Idempotency-Key | §04, §09, BR-03/07/09/10 |
+| `0017_reservation_and_pin.sql` | จองโต๊ะสำหรับลูกค้าที่ไม่ล็อกอิน และฟังก์ชันตั้ง/ตรวจ PIN | §02, §06 กลุ่ม 2 |
+| `0018_close_leaks.sql` | ปิดช่องที่ยิง API ตรงแล้วข้ามกฎได้ 6 จุด — ดูหัวข้อด้านล่าง | §01, §05, §08 ข้อ 7, §09 |
 
 migration ชุดเดิม (ก่อนสเปคใหม่) ถูกลบออกจาก repo แล้ว หากต้องการดูย้อนหลัง
 อยู่ในประวัติ git ที่คอมมิต `9e18e64` และก่อนหน้า ใต้โฟลเดอร์ `supabase/legacy/`
@@ -68,7 +70,7 @@ supabase db push
 
 - BR-01 สั่งอาหารตอนสถานะไม่ใช่ `DINING` · และออเดอร์แรกเลื่อน `SEATED → DINING` ให้เอง
 - BR-02 ปิดโต๊ะแล้ว `qr_token` ถูกเพิกถอน โต๊ะเข้าสถานะ `CLEANING` และ `visit_table` ถูกปล่อย
-- BR-03 ลดจำนวนคนไม่ได้
+- BR-03 ลดจำนวนคนไม่ได้ (ตอนทดสอบครอบคลุมแค่ `visit_pax` — `visit_addon` ปิดทีหลังที่ `0018`)
 - BR-06 จ่ายเกินยอดไม่ได้ · จ่ายไม่ครบปิดโต๊ะไม่ได้ · จ่ายครบหลายแถวแล้วปิดได้
 - BR-07 รวมบิลข้ามคิวไม่ได้
 - BR-10 ทุกการเปลี่ยนแปลงของ visit / bill / payment ลง `audit_log`
@@ -90,9 +92,26 @@ supabase db push
   (สองส่วนของสเปคขัดกัน) — เลือกตาม §08 เพราะสะท้อนงานจริงที่ต้องเก็บโต๊ะก่อน
   พนักงานกดคืนเป็น `AVAILABLE` เองจากผังโต๊ะ
 
+## ช่องที่ `0018_close_leaks.sql` ปิด
+
+หกข้อนี้ตรวจพบจากการไล่โค้ดที่ deploy อยู่จริง ไม่ใช่ข้อสังเกตเชิงออกแบบ
+ทุกข้อเป็นกรณีที่ "ยิง API ตรงแล้วข้ามกฎได้" ซึ่งเป็นสิ่งเดียวที่ §01 ห้ามไว้
+
+| ช่อง | เดิมเป็นอย่างไร |
+| --- | --- |
+| BR-03 ไม่คุม `visit_addon` | `t01_addon_within_paying_pax` กันแค่ `qty` เกินจำนวนหัว ลูกค้าจึงสั่งน้ำรีฟิล ดื่มหมด แล้ว `POST {qty:0}` ทับได้ `fn_calc_bill` อ่านค่าล่าสุดตอนออกบิล จึงจ่ายศูนย์ |
+| `staff.pin_hash` หลุด | `0010` `grant select` ทั้งตาราง หน้าเว็บจึงดึง hash ลงเบราว์เซอร์ได้จริง — `revoke select (pin_hash)` แบบรายคอลัมน์ใน `0017` ไม่มีผล เพราะ PostgreSQL ถอนสิทธิ์คอลัมน์ทับสิทธิ์ระดับตารางไม่ได้ |
+| ฟังก์ชัน `0016` ไม่เช็คบทบาท | `fn_void_visit` · `fn_restore_record` · `fn_merge_bills` · `fn_daily_report` เป็น `security definer` + `grant` ให้ `authenticated` โดยไม่ตรวจอะไรเลย STAFF คนไหนก็ยกเลิก Visit สาขาไหนก็ได้ และอ่านยอดขายทุกสาขาได้ |
+| `staff_update_visit` ไม่กัน `deleted_at` | `USING` ไม่มี `deleted_at is null` จึงเซ็ตกลับเป็น `null` ได้ ทั้งที่ BR-10 สงวนให้ SUPERVISOR |
+| BR-01 รั่วที่ `order_item` | trigger คุมแค่ `order_batch` ตอน INSERT และ policy ของ `order_item` ตรวจแค่ `fn_has_role('STAFF')` ไม่ดูทั้งสถานะ Visit และสาขา |
+| `t99_audit` ไม่ครบ | ผูกไว้ 6 ตาราง แต่หน้ากู้คืนแตะได้ 19 ตาราง การกู้คืนส่วนใหญ่จึงไม่มีร่องรอย |
+
 ## งานที่ยังไม่ทำในชั้นฐานข้อมูล
 
-- ยังไม่ได้ตั้ง `pg_cron` ให้เรียก `fn_sweep_no_show()`, `fn_sweep_time_warning()`
-  และ `fn_sweep_expired_phone()` ตามรอบ — ตอนนี้ต้องเรียกจาก Edge Function หรือเรียกมือ
-- `staff.pin_hash` ยังไม่มีฟังก์ชันตรวจ PIN — ตั้งใจให้ตรวจที่ Edge Function
-  เพื่อไม่ให้ hash หลุดออกทาง PostgREST
+- ยังไม่ได้ตั้ง `pg_cron` ให้เรียก `fn_sweep_no_show()`, `fn_sweep_time_warning()`,
+  `fn_sweep_expired_phone()` และ `fn_sweep_expired_holds()` ตามรอบ — ตอนนี้ต้องเรียกมือ
+- PIN ตรวจที่ฐานข้อมูลด้วย `fn_verify_pin()` (bcrypt ผ่าน `extensions.crypt`) ไม่ใช่ที่
+  Edge Function ตามที่เคยเขียนไว้ในเอกสารฉบับก่อน เพราะชุด Edge Function ยังไม่ได้ deploy
+  ตัว hash ไม่ออกทาง PostgREST แล้วตั้งแต่ `0018` ถอน `select` ระดับตารางของ `staff`
+  แต่ยังไม่มีอะไรบังคับว่า RPC ที่มีผลทางการเงินต้องผ่าน `fn_verify_pin` มาก่อน —
+  ตอนนี้เป็นการเรียกแยกกันที่หน้าจอ ไม่ใช่เงื่อนไขที่ฐานข้อมูลบังคับ

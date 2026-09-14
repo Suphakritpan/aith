@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { api, ApiError, newIdempotencyKey } from "../../lib/api";
-import { Button, Card, Notice, PageShell } from "../../components/ui";
+import { Button, Card, Field, Input, Notice } from "../../design/primitives";
+import { IconAlert, IconClock, IconUsers } from "../../design/icons";
+import CustomerShell from "./CustomerShell";
 
 // §04 ขั้นที่ 01 — ลูกค้ากดรับคิวเอง ระบบเลือกช่อง A/B/C ให้จากจำนวนคน
-// ลูกค้าไม่ได้เลือกช่องเอง เพราะช่องผูกกับขนาดโต๊ะที่ร้านมี ไม่ใช่ความชอบ
+//
+// ลูกค้าไม่ได้เลือกช่องเอง เพราะช่องผูกกับขนาดโต๊ะที่ร้านมีจริง ไม่ใช่ความชอบ
+// แต่หน้าจอบอกให้รู้ว่ากำลังจะได้ช่องไหน เพื่อไม่ให้รู้สึกว่าระบบตัดสินใจลับหลัง
 
 const SIZES = [1, 2, 3, 4, 5, 6, 8, 10];
 
-function laneFor(partySize: number): string {
-  if (partySize <= 2) return "A";
-  if (partySize <= 4) return "B";
-  return "C";
+function laneFor(partySize: number): { lane: string; hint: string } {
+  if (partySize <= 2) return { lane: "A", hint: "1-2 คน" };
+  if (partySize <= 4) return { lane: "B", hint: "3-4 คน" };
+  return { lane: "C", hint: "5 คนขึ้นไป" };
 }
 
 export default function LandingPage() {
@@ -22,8 +26,10 @@ export default function LandingPage() {
   const [error, setError] = useState<string | null>(null);
   const [ticketNo, setTicketNo] = useState<string | null>(null);
 
-  // สร้างคีย์ครั้งเดียวต่อการกรอกหนึ่งชุด ถ้ากดซ้ำหรือ retry จะได้คิวใบเดิม ไม่ใช่ใบใหม่
+  // คีย์เดียวต่อการกรอกหนึ่งชุด กดซ้ำหรือ retry จะได้คิวใบเดิม ไม่ใช่ใบใหม่ (ADR-07)
   const [idempotencyKey, setIdempotencyKey] = useState(newIdempotencyKey);
+
+  const { lane, hint } = laneFor(partySize);
 
   async function submit() {
     setSubmitting(true);
@@ -34,7 +40,6 @@ export default function LandingPage() {
         idempotencyKey,
       );
 
-      // ชื่อฟิลด์ของ token อาจต่างกันตามรุ่นของ API จึงรับหลายชื่อ
       const token =
         (created.public_token as string | undefined) ??
         (created["token"] as string | undefined) ??
@@ -44,12 +49,10 @@ export default function LandingPage() {
         navigate(`/q/${token}`, { replace: true });
         return;
       }
-
-      // ไม่มี token ให้ติดตามต่อ อย่างน้อยต้องบอกเลขคิวให้ลูกค้าจดไว้
       setTicketNo(created.ticket_no ?? null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "รับคิวไม่สำเร็จ ลองใหม่อีกครั้ง");
-      // คำขอไม่สำเร็จ ให้คีย์ใหม่เพื่อไม่ให้ติดคำตอบเดิมที่ค้างอยู่ฝั่งเซิร์ฟเวอร์
+      // คำขอล้มเหลว ให้คีย์ใหม่ เพื่อไม่ให้ติดคำตอบเดิมที่ค้างฝั่งเซิร์ฟเวอร์
       setIdempotencyKey(newIdempotencyKey());
     } finally {
       setSubmitting(false);
@@ -58,32 +61,40 @@ export default function LandingPage() {
 
   if (ticketNo) {
     return (
-      <PageShell title="รับคิวแล้ว" subtitle="กรุณาจดเลขคิวไว้ และรอเรียกที่หน้าร้าน">
+      <CustomerShell title="รับคิวแล้ว" subtitle="จดเลขคิวไว้ แล้วรอเรียกที่หน้าร้าน">
         <Card className="text-center">
-          <p className="text-sm text-muted-strong">เลขคิวของคุณ</p>
+          <p className="text-sm text-ink-soft">เลขคิวของคุณ</p>
           <p className="tabular mt-2 text-6xl font-bold text-brand-500">{ticketNo}</p>
         </Card>
-      </PageShell>
+      </CustomerShell>
     );
   }
 
   return (
-    <PageShell
+    <CustomerShell
       title="หมากระทุปุ๊ป๊ะ"
       subtitle="หิวปุ๊บ ป๊ะหมูกระทะปั๊บ — กดรับคิวได้เลย ไม่ต้องสมัครสมาชิก"
       footer={
-        <Button size="lg" onClick={submit} disabled={submitting}>
+        <Button size="lg" block onClick={() => void submit()} disabled={submitting}>
           {submitting ? "กำลังรับคิว…" : `รับคิวสำหรับ ${partySize} คน`}
         </Button>
       }
     >
-      {error ? <Notice tone="error">{error}</Notice> : null}
+      {error ? (
+        <Notice tone="brand" icon={<IconAlert className="size-4" />}>
+          {error}
+        </Notice>
+      ) : null}
 
       <Card>
-        <p className="text-sm font-semibold">มากันกี่คน</p>
-        <p className="mt-1 text-xs text-muted">
-          ระบบจะจัดช่องคิวให้ตามขนาดกลุ่ม — ช่อง {laneFor(partySize)}
-        </p>
+        <div className="flex items-baseline justify-between">
+          <p className="text-sm font-semibold">มากันกี่คน</p>
+          <span className="flex items-center gap-1.5 text-xs text-ink-faint">
+            <IconUsers className="size-4" />
+            ช่อง {lane} · {hint}
+          </span>
+        </div>
+
         <div className="mt-3 grid grid-cols-4 gap-2">
           {SIZES.map((size) => (
             <button
@@ -91,40 +102,58 @@ export default function LandingPage() {
               type="button"
               onClick={() => setPartySize(size)}
               aria-pressed={partySize === size}
-              className={`tabular min-h-12 rounded-xl border text-base font-semibold transition ${
+              className={`tabular min-h-13 rounded-xl border-2 text-lg font-bold transition-colors ${
                 partySize === size
                   ? "border-brand-500 bg-brand-500 text-white"
-                  : "border-divider bg-surface text-ink active:bg-brand-100"
+                  : "border-line-strong bg-surface text-ink hover:bg-sunken"
               }`}
             >
               {size}
             </button>
           ))}
         </div>
+
+        <p className="mt-2 text-xs text-ink-faint">
+          ระบบจัดช่องคิวตามขนาดกลุ่ม เพื่อไม่ให้กลุ่มเล็กต้องรอโต๊ะใหญ่ว่าง
+        </p>
       </Card>
 
       <Card>
-        <label htmlFor="phone" className="text-sm font-semibold">
-          เบอร์โทร <span className="font-normal text-muted">(ไม่บังคับ)</span>
-        </label>
-        <p className="mt-1 text-xs text-muted">
-          ใส่ไว้เพื่อให้ร้านโทรตามตอนถึงคิว — ระบบลบเบอร์อัตโนมัติหลังปิดโต๊ะ 24 ชั่วโมง
-        </p>
-        <input
-          id="phone"
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="08x-xxx-xxxx"
-          className="mt-3 min-h-12 w-full rounded-xl border border-divider bg-ground px-4 text-base outline-none focus:border-brand-400"
-        />
+        <Field
+          label="เบอร์โทร (ไม่บังคับ)"
+          htmlFor="phone"
+          hint="ใส่ไว้เพื่อให้ร้านโทรตามตอนถึงคิว · ระบบลบเบอร์อัตโนมัติหลังปิดโต๊ะ 24 ชั่วโมง"
+        >
+          <Input
+            id="phone"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="08x-xxx-xxxx"
+          />
+        </Field>
       </Card>
 
-      <p className="px-1 text-xs leading-relaxed text-muted">
-        บุฟเฟต์ต่อหัว · ผู้ใหญ่ 289 บาท · เด็กเล็กสูงไม่เกิน 90 ซม. ฟรี · จำกัดเวลา 120 นาที
-      </p>
-    </PageShell>
+      <Card>
+        <p className="flex items-center gap-2 text-sm font-semibold">
+          <IconClock className="size-4 text-brand-500" />
+          ราคาและเงื่อนไข
+        </p>
+        <ul className="mt-2 space-y-1 text-sm text-ink-soft">
+          <li>บุฟเฟต์ต่อหัว ผู้ใหญ่ 289 บาท · เด็ก 189 บาท</li>
+          <li>เด็กเล็กสูงไม่เกิน 90 ซม. ฟรี</li>
+          <li>จำกัดเวลา 120 นาที เกินแล้วคิดเพิ่มเต็มรอบ</li>
+          <li>น้ำดื่มรีฟิลไม่อั้น 39 บาทต่อคน เลือกได้ทีหลัง</li>
+        </ul>
+      </Card>
+
+      <Link to="/reserve">
+        <Button variant="outline" block>
+          จองโต๊ะล่วงหน้าแทน
+        </Button>
+      </Link>
+    </CustomerShell>
   );
 }

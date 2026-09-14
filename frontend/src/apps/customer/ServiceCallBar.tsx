@@ -44,9 +44,9 @@ export default function ServiceCallBar({
   }
 
   return (
-    <footer className="sticky bottom-0 border-t border-divider bg-ground/95 px-4 py-3 backdrop-blur">
+    <footer className="sticky bottom-0 border-t border-line bg-ground/95 px-4 py-3 backdrop-blur">
       {message ? (
-        <p className="mb-2 text-center text-xs text-muted-strong" role="status">
+        <p className="mb-2 text-center text-xs text-ink-soft" role="status">
           {message}
         </p>
       ) : null}
@@ -59,7 +59,7 @@ export default function ServiceCallBar({
               type="button"
               onClick={() => void call(option.type)}
               disabled={sending !== null || waiting}
-              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-xl border border-divider bg-surface text-sm font-semibold disabled:opacity-50"
+              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-surface text-sm font-semibold disabled:opacity-50"
             >
               <span aria-hidden>{option.icon}</span>
               {waiting ? "เรียกแล้ว" : SERVICE_CALL_LABEL[option.type]}
