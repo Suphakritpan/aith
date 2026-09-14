@@ -23,14 +23,6 @@ export function preflight(): Response {
   return new Response("ok", { headers: CORS });
 }
 
-export async function readJson<T>(req: Request): Promise<T> {
-  try {
-    return (await req.json()) as T;
-  } catch {
-    throw new AppError(400, "BAD_JSON", "รูปแบบ JSON ไม่ถูกต้อง");
-  }
-}
-
 export type Params = Record<string, string>;
 export type Handler = (req: Request, params: Params) => Promise<Response>;
 

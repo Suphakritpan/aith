@@ -108,19 +108,6 @@ export const IconChevronLeft = (p: IconProps) => (
   </Icon>
 );
 
-export const IconWater = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3Z" />
-  </Icon>
-);
-
-export const IconUtensils = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M4 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3M6 12v9" />
-    <path d="M17 3c-1.5 1.5-2 3.5-2 5.5S16 12 17 12s2-1 2-3.5S18.5 4.5 17 3Zm0 9v9" />
-  </Icon>
-);
-
 export const IconLogout = (p: IconProps) => (
   <Icon {...p}>
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

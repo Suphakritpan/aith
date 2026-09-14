@@ -145,19 +145,6 @@ export function Badge({
   );
 }
 
-const TONE_DOT: Record<Tone, string> = {
-  neutral: "bg-ink-faint",
-  brand: "bg-brand-500",
-  ok: "bg-ok-500",
-  warn: "bg-warn-500",
-  info: "bg-info-500",
-};
-
-/** จุดสีคู่กับข้อความเสมอ — สีเป็นตัวช่วยอ่านเร็ว ไม่ใช่ตัวสื่อความหมายเดี่ยว ๆ */
-export function StatusDot({ tone }: { tone: Tone }) {
-  return <span className={`inline-block size-2 rounded-full ${TONE_DOT[tone]}`} aria-hidden />;
-}
-
 /* ── ฟอร์ม ───────────────────────────────────────────────────────────────── */
 
 export function Field({

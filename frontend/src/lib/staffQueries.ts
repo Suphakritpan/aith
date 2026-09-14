@@ -231,14 +231,6 @@ export async function addPax(
   if (error) rpcError(error);
 }
 
-export async function addTableToVisit(visitId: string, tableId: string) {
-  const { error } = await supabase.rpc("fn_add_table_to_visit", {
-    p_visit_id: visitId,
-    p_table_id: tableId,
-  });
-  if (error) rpcError(error);
-}
-
 /** บันทึกการรับเงิน — trigger กันไม่ให้ผลรวมเกินยอดสุทธิ (BR-06) */
 export async function recordPayment(input: {
   billId: string;
@@ -382,20 +374,4 @@ export async function mergeBills(
     p_staff_id: staffId,
   });
   if (error) rpcError(error);
-}
-
-/* ── ยืนยัน PIN ───────────────────────────────────────────────────────────── */
-
-/**
- * ตรวจ PIN ผ่านฐานข้อมูล — hash ไม่เคยถูกส่งมาที่เบราว์เซอร์
- *
- * ล้มเหลวแบบปิดกั้นเสมอ ไม่ใช่ปล่อยผ่าน: ถ้ายังไม่ได้ push migration ที่สร้าง
- * fn_verify_pin (0017) การเรียกนี้จะ error แล้วรายการที่ต้องยืนยัน PIN จะทำไม่ได้เลย
- * ซึ่งถูกต้องแล้ว — เงื่อนไข "STAFF/SUPERVISOR + PIN" ใน §09 คือด่านที่ต้องผ่านจริง
- * ไม่ใช่ด่านที่ผ่านได้เองเมื่อฐานข้อมูลยังไม่พร้อม
- */
-export async function verifyPin(pin: string): Promise<boolean> {
-  const { data, error } = await supabase.rpc("fn_verify_pin", { p_pin: pin });
-  if (error) rpcError(error);
-  return data === true;
 }
